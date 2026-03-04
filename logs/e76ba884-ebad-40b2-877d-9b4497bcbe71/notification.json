@@ -1,0 +1,26 @@
+[
+  {
+    "session_id": "e76ba884-ebad-40b2-877d-9b4497bcbe71",
+    "transcript_path": "/Users/martin/.claude/projects/-Users-martin-projects-paysdoc-AI-Dev-Workflow/e76ba884-ebad-40b2-877d-9b4497bcbe71.jsonl",
+    "cwd": "/Users/martin/projects/paysdoc/paysdoc.nl",
+    "hook_event_name": "Notification",
+    "message": "Claude needs your permission to use Bash",
+    "notification_type": "permission_prompt"
+  },
+  {
+    "session_id": "e76ba884-ebad-40b2-877d-9b4497bcbe71",
+    "transcript_path": "/Users/martin/.claude/projects/-Users-martin-projects-paysdoc-AI-Dev-Workflow/e76ba884-ebad-40b2-877d-9b4497bcbe71.jsonl",
+    "cwd": "/Users/martin/projects/paysdoc/paysdoc.nl",
+    "hook_event_name": "Notification",
+    "message": "Claude needs your permission to use Bash",
+    "notification_type": "permission_prompt"
+  },
+  {
+    "session_id": "e76ba884-ebad-40b2-877d-9b4497bcbe71",
+    "transcript_path": "/Users/martin/.claude/projects/-Users-martin-projects-paysdoc-AI-Dev-Workflow/e76ba884-ebad-40b2-877d-9b4497bcbe71.jsonl",
+    "cwd": "/Users/martin/projects/paysdoc/paysdoc.nl",
+    "hook_event_name": "Notification",
+    "message": "Claude needs your permission to use Bash",
+    "notification_type": "permission_prompt"
+  }
+]
