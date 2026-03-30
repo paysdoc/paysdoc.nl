@@ -1,0 +1,3 @@
+module.exports=[22131,a=>{"use strict";var b=a.i(87924);function c({calLink:a}){return(0,b.jsx)("div",{className:"w-full rounded-xl overflow-hidden border border-[var(--border)]",children:(0,b.jsx)("iframe",{src:`https://cal.com/${a}?embed=true&theme=auto`,className:"w-full border-0",style:{height:"700px"},title:"Book a discovery call"})})}a.s(["default",()=>c])}];
+
+//# sourceMappingURL=src_components_CalEmbed_tsx_b8135f5d._.js.map

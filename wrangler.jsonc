@@ -1,0 +1,12 @@
+{
+  "name": "paysdoc-nl",
+  "compatibility_date": "2025-04-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "paysdoc-auth-db",
+      "database_id": "<PLACEHOLDER — replace after running wrangler d1 create paysdoc-auth-db>"
+    }
+  ]
+}
