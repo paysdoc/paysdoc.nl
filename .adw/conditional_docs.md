@@ -8,3 +8,8 @@
 - path:src/app/ — when working on any page, route, or app-level layout
 - path:src/components/ — when working on shared UI components
 - path:public/ — when managing static assets
+- app_docs/feature-k6j0g6-github-actions-cf-pages.md
+  - Conditions:
+    - When working with the GitHub Actions CI/CD pipeline
+    - When modifying or troubleshooting the Cloudflare Pages deployment workflow
+    - When configuring deployment secrets or changing the Cloudflare project name
