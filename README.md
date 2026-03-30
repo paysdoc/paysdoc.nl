@@ -44,6 +44,21 @@ public/                 # Static assets (SVGs)
 
 See [UBIQUITOUS_LANGUAGE.md](./UBIQUITOUS_LANGUAGE.md) for the canonical terminology used across this project and the ADW product.
 
+## Deployment
+
+The site is deployed to [Cloudflare Pages](https://pages.cloudflare.com/) via GitHub Actions. On every push to `main`, the workflow:
+
+1. Installs dependencies with Bun
+2. Builds the static site (`bun run build` → `out/`)
+3. Deploys the `out/` directory to Cloudflare Pages using Wrangler
+
+The following GitHub Actions secrets must be configured in the repository:
+
+| Secret | Description |
+|--------|-------------|
+| `CLOUDFLARE_API_TOKEN` | Cloudflare API token with Pages deployment permissions |
+| `CLOUDFLARE_ACCOUNT_ID` | Cloudflare account ID |
+
 ## Scripts
 
 | Command | Description |
