@@ -42,9 +42,17 @@ src/
     Providers.tsx
     ServiceCard.tsx
     SkillCard.tsx
+  lib/                  # Shared utilities and business logic
+    roles.ts            # Role resolution helpers
+    __tests__/          # Unit tests (Vitest)
+  types/                # TypeScript type augmentations
+    next-auth.d.ts      # Extended Auth.js session/JWT types
   auth.ts               # Auth.js v5 configuration
   middleware.ts         # Route protection middleware
 migrations/             # Cloudflare D1 SQL migrations
+features/               # Cucumber BDD feature files
+specs/                  # ADW-generated implementation specs
+app_docs/               # Feature documentation
 public/                 # Static assets (SVGs)
 ```
 
@@ -127,3 +135,4 @@ The following GitHub Actions secrets must be configured in the repository:
 | `npm run build` | Production build (OpenNext for Cloudflare) |
 | `npm run start` | Start production server |
 | `npm run lint` | Run ESLint |
+| `npm run test` | Run unit tests (Vitest) |

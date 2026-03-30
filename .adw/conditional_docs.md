@@ -27,3 +27,10 @@
     - When extending Auth.js session/JWT types or adding new session properties
     - When writing unit tests with Vitest or configuring the test infrastructure
     - When troubleshooting role not appearing in session or admin redirect behavior
+- app_docs/feature-8g73bx-client-repo-dashboard.md
+  - Conditions:
+    - When working on the /dashboard page or client repo management features
+    - When implementing CRUD operations against the client_repos or projects D1 tables
+    - When adding or modifying Next.js server actions that interact with Cloudflare D1
+    - When extending URL parsing logic for GitHub or GitLab repository URLs
+    - When troubleshooting auto-match logic between client repos and Paysdoc projects

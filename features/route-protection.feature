@@ -16,11 +16,13 @@ Feature: Route protection for authenticated pages
     When I navigate to "/admin"
     Then I should be redirected to the login page
 
+  @adw-rvwtyw-client-repo-manageme
   Scenario: Authenticated user can access /dashboard
     Given I am an authenticated user with email "jane@example.com"
+    And my role is "client"
     When I navigate to "/dashboard"
     Then I should see the dashboard page
-    And I should see "you are logged in as jane@example.com"
+    And I should see a "My Repositories" section
 
   @adw-1l6tsn-role-resolution-admi
   Scenario: Authenticated client user accessing /admin is redirected to /dashboard
