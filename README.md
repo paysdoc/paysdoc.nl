@@ -42,6 +42,11 @@ src/
     Providers.tsx
     ServiceCard.tsx
     SkillCard.tsx
+  lib/                  # Business logic
+    __tests__/roles.test.ts
+    roles.ts            # Role resolution (admin/client)
+  types/
+    next-auth.d.ts      # Auth.js session type extensions
   auth.ts               # Auth.js v5 configuration
   middleware.ts         # Route protection middleware
 migrations/             # Cloudflare D1 SQL migrations
