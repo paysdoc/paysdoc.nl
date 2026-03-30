@@ -126,6 +126,79 @@ The following GitHub Actions secrets must be configured in the repository:
 | `AUTH_GOOGLE_SECRET` | Google OAuth client secret |
 | `AUTH_GITHUB_ID` | GitHub OAuth app client ID |
 | `AUTH_GITHUB_SECRET` | GitHub OAuth app client secret |
+| `EMAIL_WORKER_URL` | Full URL of the deployed Cloudflare email worker |
+| `EMAIL_FROM` | Sender address for magic link emails (e.g. `noreply@paysdoc.nl`) |
+
+## Magic Link Email Setup
+
+Magic link (passwordless) login is implemented via the Auth.js Email provider backed by a Cloudflare Worker that sends emails using [MailChannels](https://mailchannels.com/).
+
+### Email worker deployment
+
+The worker lives in `workers/email-worker/`. To deploy it manually:
+
+```bash
+cd workers/email-worker
+npm install
+npx wrangler deploy
+```
+
+After deploying, Cloudflare will print the worker URL (e.g. `https://paysdoc-email-worker.<account>.workers.dev`). Set this as `EMAIL_WORKER_URL` in the main app environment.
+
+### Required environment variables
+
+In addition to the OAuth variables, the following are required:
+
+| Variable | Where | Description |
+|----------|-------|-------------|
+| `EMAIL_WORKER_URL` | Main app | Full URL of the deployed email worker |
+| `EMAIL_FROM` | Email worker | Sender address (e.g. `noreply@paysdoc.nl`) |
+| `AUTH_SECRET` | Both | Shared secret — must match between app and worker for request validation |
+
+Set `EMAIL_FROM` and `AUTH_SECRET` on the worker via the Cloudflare dashboard (Workers → Settings → Variables) or `wrangler secret put AUTH_SECRET`.
+
+For local development, add to the main app's `.dev.vars`:
+
+```
+EMAIL_WORKER_URL=https://paysdoc-email-worker.<account>.workers.dev
+```
+
+And add to `workers/email-worker/.dev.vars`:
+
+```
+AUTH_SECRET=your-secret-here
+EMAIL_FROM=noreply@paysdoc.nl
+```
+
+### DNS configuration (HITL required)
+
+> **Note:** These DNS records must be manually configured by the domain owner. The code can be deployed and reviewed without them, but magic link emails will not be delivered until DNS is in place.
+
+#### 1. SPF record
+
+Add a TXT record to the sending domain (e.g. `paysdoc.nl`):
+
+```
+v=spf1 include:relay.mailchannels.net -all
+```
+
+#### 2. DKIM record
+
+Follow the [MailChannels DKIM setup guide](https://support.mailchannels.com/hc/en-us/articles/16918954360845) to generate a DKIM key pair. Add the public key as a TXT record:
+
+```
+mailchannels._domainkey.<domain>  TXT  v=DKIM1; k=rsa; p=<public-key>
+```
+
+#### 3. Domain lockdown record
+
+Authorize the Cloudflare Worker to send on behalf of your domain by adding:
+
+```
+_mailchannels.<domain>  TXT  v=mc1 cfid=<worker-subdomain>.workers.dev
+```
+
+Replace `<worker-subdomain>` with the subdomain shown in your worker URL.
 
 ## Scripts
 
