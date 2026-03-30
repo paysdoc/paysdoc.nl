@@ -27,3 +27,9 @@
     - When extending Auth.js session/JWT types or adding new session properties
     - When writing unit tests with Vitest or configuring the test infrastructure
     - When troubleshooting role not appearing in session or admin redirect behavior
+- app_docs/feature-gn1ivk-admin-cost-dashboard.md
+  - Conditions:
+    - When working on the /admin page or admin cost dashboard
+    - When adding or querying the projects, cost_records, or token_usage D1 tables
+    - When implementing cost aggregation, model/provider breakdown, or per-issue cost detail
+    - When troubleshooting D1 data access patterns in server components
