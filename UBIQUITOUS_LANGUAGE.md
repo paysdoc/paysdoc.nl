@@ -25,6 +25,16 @@
 | **Pipeline** | An ordered sequence of agents that transforms an Issue into a merged PR | Workflow, flow |
 | **SDLC** | Software Development Lifecycle — the full sequence from issue creation to deployed code | Dev cycle |
 
+## Authentication
+
+| Term | Definition | Aliases to avoid |
+|------|-----------|-----------------|
+| **Session** | An authenticated user's active login state, managed by Auth.js and stored in a signed cookie | Token, login state |
+| **Provider** | An OAuth identity provider (Google, GitHub) through which a **Visitor** authenticates | OAuth client, SSO |
+| **Magic Link** | A time-limited, single-use URL sent by email that authenticates a **Visitor** without a password | Email link, passwordless link |
+| **Email Worker** | A Cloudflare Worker responsible for sending transactional emails (e.g. **Magic Link** emails) | Mailer, email service |
+| **Visitor** | An unauthenticated person browsing the public marketing site | Anonymous user, guest |
+
 ## Relationships
 
 - A **Service** may include setting up one or more **Pipelines** on a client's repositories
@@ -32,6 +42,8 @@
 - An **Issue** triggers a **Pipeline** which produces a **PR**
 - A **Skill** demonstrates a capability that underlies one or more **Services**
 - A **Discovery Call** initiates an engagement for a **Service**
+- A **Visitor** authenticates via a **Provider** or a **Magic Link** to establish a **Session**
+- An **Email Worker** delivers **Magic Link** emails on behalf of the authentication system
 
 ## Example dialogue
 
@@ -39,6 +51,8 @@
 > **Paysdoc:** "We set up an **ADW** **Pipeline** on your repository. When your team creates an **Issue**, the **Pipeline** triggers a sequence of **Agents** that plan, build, test, and review the change — ending with a **PR** ready for human approval."
 > **Client:** "Do the **Agents** replace our developers?"
 > **Paysdoc:** "No — they handle the mechanical parts of the **SDLC**. Developers focus on requirements and final review. Book a **Discovery Call** to see which **Service** fits your team."
+> **Dev:** "How does a **Visitor** log in without a password?"
+> **Paysdoc:** "They request a **Magic Link** via email. The **Email Worker** delivers it, and clicking it creates a **Session** — no **Provider** credentials required."
 
 ## Flagged ambiguities
 
