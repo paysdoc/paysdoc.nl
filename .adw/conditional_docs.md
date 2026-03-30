@@ -13,3 +13,10 @@
     - When working with the GitHub Actions CI/CD pipeline
     - When modifying or troubleshooting the Cloudflare Pages deployment workflow
     - When configuring deployment secrets or changing the Cloudflare project name
+- app_docs/feature-id4hh3-auth-bootstrap-social-login.md
+  - Conditions:
+    - When working with authentication, sessions, or OAuth providers (Google, GitHub)
+    - When modifying Navbar auth state, login page, or protected routes (/dashboard, /admin)
+    - When configuring Auth.js, D1 adapter, or Cloudflare D1 database bindings
+    - When troubleshooting middleware route protection or session persistence
+    - When setting up @opennextjs/cloudflare adapter or wrangler.jsonc
