@@ -57,11 +57,9 @@ next-env.d.ts
 .claude/commands/generate_step_definitions.md
 .claude/commands/implement.md
 .claude/commands/in_loop_review.md
-.claude/commands/install.md
 .claude/commands/patch.md
 .claude/commands/pr_review.md
 .claude/commands/prepare_app.md
-.claude/commands/prime.md
 .claude/commands/pull_request.md
 .claude/commands/resolve_conflict.md
 .claude/commands/resolve_failed_e2e_test.md
