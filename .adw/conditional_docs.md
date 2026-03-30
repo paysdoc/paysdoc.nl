@@ -20,3 +20,10 @@
     - When configuring Auth.js, D1 adapter, or Cloudflare D1 database bindings
     - When troubleshooting middleware route protection or session persistence
     - When setting up @opennextjs/cloudflare adapter or wrangler.jsonc
+- app_docs/feature-1l6tsn-role-resolution-admin-guard.md
+  - Conditions:
+    - When working with role-based access control or adding/removing admin users
+    - When modifying middleware route guards for /admin/* or /dashboard/* routes
+    - When extending Auth.js session/JWT types or adding new session properties
+    - When writing unit tests with Vitest or configuring the test infrastructure
+    - When troubleshooting role not appearing in session or admin redirect behavior

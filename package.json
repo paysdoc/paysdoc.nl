@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "npx opennextjs-cloudflare build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "vitest run"
   },
   "dependencies": {
     "@auth/d1-adapter": "^1.11.1",
@@ -29,6 +30,7 @@
     "tailwindcss": "^4",
     "ts-node": "^10.9.2",
     "typescript": "^5",
+    "vitest": "^4.1.2",
     "wrangler": "4.78.0"
   }
 }
