@@ -33,3 +33,10 @@
     - When adding or querying the projects, cost_records, or token_usage D1 tables
     - When implementing cost aggregation, model/provider breakdown, or per-issue cost detail
     - When troubleshooting D1 data access patterns in server components
+- app_docs/feature-8g73bx-client-repo-dashboard.md
+  - Conditions:
+    - When working on the /dashboard page or client repo management features
+    - When implementing CRUD operations against the client_repos or projects D1 tables
+    - When adding or modifying Next.js server actions that interact with Cloudflare D1
+    - When extending URL parsing logic for GitHub or GitLab repository URLs
+    - When troubleshooting auto-match logic between client repos and Paysdoc projects
