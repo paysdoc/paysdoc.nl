@@ -23,7 +23,7 @@ npm run dev
 npm install && npm run dev -- --port {PORT}
 
 ## Run E2E Tests
-N/A
+npx cucumber-js
 
 ## Additional Type Checks
 N/A
