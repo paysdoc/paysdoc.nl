@@ -17,6 +17,9 @@
 /.next/
 /out/
 
+# opennext build output
+/.open-next/
+
 # production
 /build
 
@@ -35,6 +38,13 @@ yarn-error.log*
 
 # vercel
 .vercel
+
+# cloudflare
+.wrangler/
+
+# agent artifacts (screenshots, test images, logs)
+/agents/
+/logs/
 
 # typescript
 *.tsbuildinfo
