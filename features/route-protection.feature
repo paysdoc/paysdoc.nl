@@ -22,11 +22,12 @@ Feature: Route protection for authenticated pages
     Then I should see the dashboard page
     And I should see "you are logged in as jane@example.com"
 
-  Scenario: Authenticated user can access /admin
+  @adw-1l6tsn-role-resolution-admi
+  Scenario: Authenticated client user accessing /admin is redirected to /dashboard
     Given I am an authenticated user with email "jane@example.com"
+    And my role is "client"
     When I navigate to "/admin"
-    Then I should see the admin page
-    And I should see "you are logged in as jane@example.com"
+    Then I should be redirected to "/dashboard"
 
   Scenario: Unauthenticated user is redirected from /dashboard subpath to login
     Given I am an unauthenticated user
