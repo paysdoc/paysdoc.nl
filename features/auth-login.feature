@@ -4,7 +4,7 @@ Feature: Authentication via social login
   I want to log in using my Google or GitHub account
   So that I can access protected areas of the site
 
-  @regression
+  @regression @adw-6otp7j-magic-link-login-ema
   Scenario: Login page is accessible
     Given I am an unauthenticated user
     When I navigate to the login page

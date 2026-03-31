@@ -40,3 +40,10 @@
     - When adding or modifying Next.js server actions that interact with Cloudflare D1
     - When extending URL parsing logic for GitHub or GitLab repository URLs
     - When troubleshooting auto-match logic between client repos and Paysdoc projects
+- app_docs/feature-6otp7j-magic-link-email-worker.md
+  - Conditions:
+    - When working with magic link / passwordless email authentication
+    - When modifying or deploying the email worker (`workers/email-worker/`)
+    - When configuring Auth.js Email provider or `sendVerificationRequest`
+    - When troubleshooting MailChannels delivery or DNS (SPF, DKIM, domain lockdown)
+    - When adding environment variables for `EMAIL_WORKER_URL`, `EMAIL_FROM`, or `AUTH_SECRET`

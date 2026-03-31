@@ -42,6 +42,33 @@ export default async function LoginPage() {
             </button>
           </form>
         </div>
+        <div className="relative flex items-center gap-3">
+          <div className="flex-1 border-t border-[var(--border)]" />
+          <span className="text-xs text-[var(--foreground)]/50">or</span>
+          <div className="flex-1 border-t border-[var(--border)]" />
+        </div>
+        <form
+          action={async (formData: FormData) => {
+            'use server';
+            const email = formData.get('email') as string;
+            await signIn('email', { email, redirectTo: '/dashboard' });
+          }}
+          className="flex flex-col gap-3"
+        >
+          <input
+            type="email"
+            name="email"
+            required
+            placeholder="your@email.com"
+            className="w-full rounded-md border border-[var(--border)] bg-[var(--background)] px-4 py-2.5 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--foreground)]/20"
+          />
+          <button
+            type="submit"
+            className="w-full rounded-md border border-[var(--border)] bg-[var(--background)] px-4 py-2.5 text-sm font-medium transition-colors hover:bg-[var(--foreground)]/5"
+          >
+            Send magic link
+          </button>
+        </form>
       </div>
     </div>
   );

@@ -1,0 +1,11 @@
+{
+  "name": "paysdoc-email-worker",
+  "compatibility_date": "2025-04-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "vars": {
+    // Sender email address — override in Cloudflare dashboard or .dev.vars
+    "EMAIL_FROM": "noreply@paysdoc.nl",
+    // Shared secret matching AUTH_SECRET in the main app — set in Cloudflare dashboard
+    "AUTH_SECRET": ""
+  }
+}
