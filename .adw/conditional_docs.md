@@ -73,3 +73,15 @@
     - When adding industries, project highlights, technology groups, or languages to the About page
     - When ensuring the About page contains no ADW/agent/pipeline terminology
     - When troubleshooting the headshot image or About page layout in light/dark mode
+- app_docs/feature-8z0la0-how-it-works-page.md
+  - Conditions:
+    - When working on the /how-it-works page or its content
+    - When adding or modifying the three-phase AI development concept copy
+    - When integrating InterestForm as a CTA on marketing pages
+    - When troubleshooting the coming-soon framing or phase card layout
+- app_docs/feature-6q5dst-services-page-rewrite.md
+  - Conditions:
+    - When working on the /services page or its layout and copy
+    - When extending or modifying the ServiceCard component (badge, CTA, variant props)
+    - When adding new service tiers or updating the industries list
+    - When troubleshooting badge styling or CTA alignment in service cards

@@ -31,7 +31,6 @@ Open [http://localhost:3000](http://localhost:3000) to see the result.
 ```
 src/
   app/                  # Next.js App Router pages
-    about/page.tsx
     admin/page.tsx
     auth/verify-request/page.tsx
     contact/page.tsx
