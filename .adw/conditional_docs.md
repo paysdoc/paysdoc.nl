@@ -54,6 +54,13 @@
     - When troubleshooting `env.BINDING.get()` async secret access in `src/auth.ts` or the email worker
     - When configuring GitHub Actions deploy workflow secrets
     - When setting up a new Cloudflare environment and need to create the secrets store
+- app_docs/feature-37wzob-brand-rebrand-styling.md
+  - Conditions:
+    - When working with the Paysdoc color palette, CSS variables, or brand colors in globals.css
+    - When modifying the Navbar logo, brand text, or navigation links
+    - When updating the Footer with business details, address, or KVK number
+    - When adding or changing the Euphemia UCAS font or @font-face declarations
+    - When troubleshooting dark mode appearance or accent color rendering
 - app_docs/feature-ncd0ia-interest-capture-api.md
   - Conditions:
     - When working on the /contact page or the InterestForm component

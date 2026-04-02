@@ -73,7 +73,10 @@ features/               # Cucumber BDD feature files
 e2e-tests/              # E2E test plans
 specs/                  # ADW-generated implementation specs
 app_docs/               # Feature documentation
-public/                 # Static assets (SVGs)
+public/
+  fonts/                # Self-hosted brand fonts (Euphemia UCAS)
+  images/               # Brand imagery (logo, headshot)
+  # Static SVGs and favicon
 cloudflare-env.d.ts     # Cloudflare environment type bindings
 wrangler.jsonc          # Cloudflare Workers/Pages deployment config
 open-next.config.ts     # OpenNext Cloudflare adapter config
@@ -100,7 +103,7 @@ Authentication is handled by [Auth.js v5](https://authjs.dev/) with Google and G
 | `AUTH_GITHUB_ID` | GitHub OAuth app client ID |
 | `AUTH_GITHUB_SECRET` | GitHub OAuth app client secret |
 
-For local development, create a `.dev.vars` file (Cloudflare convention, git-ignored):
+For local development, create a `.env.local` file at the project root (git-ignored):
 
 ```
 AUTH_SECRET=your-secret-here
@@ -109,6 +112,8 @@ AUTH_GOOGLE_SECRET=your-google-client-secret
 AUTH_GITHUB_ID=your-github-client-id
 AUTH_GITHUB_SECRET=your-github-client-secret
 ```
+
+Alternatively, use a `.dev.vars` file (Cloudflare convention) with the same variables — both are read during local development.
 
 ### D1 database setup
 

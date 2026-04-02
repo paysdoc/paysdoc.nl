@@ -10,6 +10,7 @@ const links = [
   { href: '/', label: 'Home' },
   { href: '/about', label: 'About' },
   { href: '/services', label: 'Services' },
+  { href: '/how-it-works', label: 'How It Works' },
   { href: '/contact', label: 'Contact' },
 ];
 
@@ -32,8 +33,12 @@ export default function Navbar() {
   return (
     <nav className="border-b border-[var(--border)] bg-[var(--background)]/80 backdrop-blur-sm sticky top-0 z-50">
       <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
-        <Link href="/" className="text-xl font-bold tracking-tight">
-          paysdoc<span className="text-[var(--accent)]">.nl</span>
+        <Link href="/" className="flex items-center gap-3">
+          <Image src="/logo-simpel.png" alt="Paysdoc logo" width={32} height={32} />
+          <span className="flex flex-col leading-none">
+            <span className="text-sm font-bold tracking-widest uppercase">PAYSDOC</span>
+            <span className="text-xs text-[var(--muted)]">consultancy</span>
+          </span>
         </Link>
         <div className="flex items-center gap-6">
           {links.map(({ href, label }) => (
