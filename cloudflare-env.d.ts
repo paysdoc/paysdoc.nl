@@ -4,6 +4,7 @@ interface SecretStoreSecret {
 
 interface CloudflareEnv {
   DB: D1Database;
+  INTEREST_KV: KVNamespace;
   AUTH_SECRET: SecretStoreSecret;
   AUTH_GOOGLE_ID: SecretStoreSecret;
   AUTH_GOOGLE_SECRET: SecretStoreSecret;

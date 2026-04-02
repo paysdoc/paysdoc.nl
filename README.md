@@ -10,6 +10,14 @@ Install dependencies:
 npm install
 ```
 
+Copy the sample environment file and fill in your values:
+
+```bash
+cp .env.sample .env
+```
+
+See `.env.sample` for all required variables. For local development with Cloudflare Workers (`wrangler dev`), copy the same values into `.dev.vars` — Cloudflare ignores `.env`.
+
 Run the development server:
 
 ```bash
@@ -40,7 +48,7 @@ src/
     layout.tsx
     page.tsx
   components/           # Shared UI components
-    CalEmbed.tsx
+    InterestForm.tsx
     Footer.tsx
     Hero.tsx
     Navbar.tsx
@@ -67,8 +75,11 @@ specs/                  # ADW-generated implementation specs
 app_docs/               # Feature documentation
 public/                 # Static assets (SVGs)
 cloudflare-env.d.ts     # Cloudflare environment type bindings
+wrangler.jsonc          # Cloudflare Workers/Pages deployment config
+open-next.config.ts     # OpenNext Cloudflare adapter config
 vitest.config.ts        # Vitest unit test configuration
 cucumber.js             # Cucumber BDD configuration
+.adw/                   # ADW pipeline configuration (project, scenarios, providers)
 ```
 
 ## Domain Language
