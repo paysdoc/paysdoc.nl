@@ -67,6 +67,12 @@
     - When implementing or extending the POST /api/interest endpoint or KV storage
     - When creating the INTEREST_KV namespace or wiring Cloudflare KV bindings
     - When troubleshooting interest email capture, validation, or duplicate submission handling
+- app_docs/feature-cl62as-about-page-consultant-profile.md
+  - Conditions:
+    - When working on the /about page or updating the consultant profile content
+    - When adding industries, project highlights, technology groups, or languages to the About page
+    - When ensuring the About page contains no ADW/agent/pipeline terminology
+    - When troubleshooting the headshot image or About page layout in light/dark mode
 - app_docs/feature-tu81jj-home-page-rewrite.md
   - Conditions:
     - When working on the home page (`src/app/page.tsx`) or hero section (`src/components/Hero.tsx`)
