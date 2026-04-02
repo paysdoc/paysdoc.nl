@@ -42,7 +42,9 @@ src/
       actions.ts        # Server actions for repo CRUD
     login/page.tsx
     services/page.tsx
-    api/auth/[...nextauth]/route.ts
+    api/
+      auth/[...nextauth]/route.ts
+      interest/route.ts     # Interest capture API endpoint (POST /api/interest)
     favicon.ico
     globals.css
     layout.tsx
