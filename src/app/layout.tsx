@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     template: '%s | paysdoc.nl',
   },
   description:
-    'Autonomous development workflows that plan, build, test, review, and document — from GitHub issue to production-ready pull request.',
+    'AI-powered software engineering with nearly 30 years of full-stack expertise. From idea to production-ready software for non-technical founders.',
   metadataBase: new URL('https://paysdoc.nl'),
 };
 

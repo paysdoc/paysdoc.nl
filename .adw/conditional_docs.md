@@ -67,6 +67,12 @@
     - When implementing or extending the POST /api/interest endpoint or KV storage
     - When creating the INTEREST_KV namespace or wiring Cloudflare KV bindings
     - When troubleshooting interest email capture, validation, or duplicate submission handling
+- app_docs/feature-tu81jj-home-page-rewrite.md
+  - Conditions:
+    - When working on the home page (`src/app/page.tsx`) or hero section (`src/components/Hero.tsx`)
+    - When modifying the SkillCard component or capability card copy/styling
+    - When updating the professional headshot or hero layout
+    - When troubleshooting the InterestForm placement or hero CTA behavior
 - app_docs/feature-8z0la0-how-it-works-page.md
   - Conditions:
     - When working on the /how-it-works page or its content
