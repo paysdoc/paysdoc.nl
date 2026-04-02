@@ -1,7 +1,7 @@
 interface Env {
-  EMAIL_FROM: string;
-  AUTH_SECRET: string;
-  RESEND_API_KEY: string;
+  EMAIL_FROM: { get(): Promise<string> };
+  AUTH_SECRET: { get(): Promise<string> };
+  RESEND_API_KEY: { get(): Promise<string> };
 }
 
 interface EmailRequestBody {
@@ -59,8 +59,14 @@ const handler = {
       return new Response('Method not allowed', { status: 405 });
     }
 
+    const [authSecret, resendApiKey, emailFrom] = await Promise.all([
+      env.AUTH_SECRET.get(),
+      env.RESEND_API_KEY.get(),
+      env.EMAIL_FROM.get(),
+    ]);
+
     const authHeader = request.headers.get('Authorization');
-    if (!authHeader || authHeader !== `Bearer ${env.AUTH_SECRET}`) {
+    if (!authHeader || authHeader !== `Bearer ${authSecret}`) {
       return new Response('Unauthorized', { status: 401 });
     }
 
@@ -83,11 +89,11 @@ const handler = {
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${env.RESEND_API_KEY}`,
+        'Authorization': `Bearer ${resendApiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: `paysdoc.nl <${env.EMAIL_FROM}>`,
+        from: `paysdoc.nl <${emailFrom}>`,
         to: [to],
         subject: 'Sign in to paysdoc.nl',
         text: buildTextEmail(url),

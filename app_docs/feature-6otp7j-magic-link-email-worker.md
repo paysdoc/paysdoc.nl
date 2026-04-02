@@ -57,9 +57,12 @@ Adds passwordless magic link login as a fallback authentication method alongside
 
 | Variable | Where set | Description |
 |---|---|---|
-| `EMAIL_WORKER_URL` | Main app (Pages) | Full URL of the deployed email worker, e.g. `https://paysdoc-email-worker.<account>.workers.dev` |
-| `EMAIL_FROM` | Email worker (Cloudflare dashboard) | Sender address, e.g. `noreply@paysdoc.nl` |
-| `AUTH_SECRET` | Both app and worker | Shared secret — must match in both environments |
+| `EMAIL_WORKER_URL` | Main app — Cloudflare Secrets Store | Full URL of the deployed email worker, e.g. `https://paysdoc-email-worker.<account>.workers.dev` |
+| `EMAIL_FROM` | Email worker — Cloudflare Secrets Store | Sender address, e.g. `noreply@paysdoc.nl` |
+| `AUTH_SECRET` | Both app and worker — Cloudflare Secrets Store | Shared secret — must match in both environments |
+| `RESEND_API_KEY` | Email worker — Cloudflare Secrets Store | Resend API key for sending emails |
+
+All secrets are managed via Cloudflare Secrets Store and injected at runtime via `env.BINDING.get()`. For local development use `.dev.vars` files.
 
 ### DNS Configuration (HITL required)
 

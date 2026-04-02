@@ -6,43 +6,50 @@ import { getCloudflareContext } from '@opennextjs/cloudflare';
 import { resolveRole } from '@/lib/roles';
 import type { EmailConfig } from '@auth/core/providers/email';
 
-const emailProvider: EmailConfig = {
-  id: 'email',
-  type: 'email',
-  name: 'Email',
-  from: 'noreply@paysdoc.nl',
-  maxAge: 24 * 60 * 60,
-  async sendVerificationRequest({ identifier, url }) {
-    const workerUrl = process.env.EMAIL_WORKER_URL;
-    const secret = process.env.AUTH_SECRET;
-    if (!workerUrl) throw new Error('EMAIL_WORKER_URL is not set');
-    const response = await fetch(workerUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${secret}`,
-      },
-      body: JSON.stringify({ to: identifier, url }),
-    });
-    if (!response.ok) {
-      throw new Error(`Email worker responded with ${response.status}`);
-    }
-  },
-  options: {},
-};
-
 export const { handlers, auth, signIn, signOut } = NextAuth(async () => {
   const { env } = await getCloudflareContext({ async: true });
+  const [emailWorkerUrl, authSecret, googleId, googleSecret, githubId, githubSecret] = await Promise.all([
+    env.EMAIL_WORKER_URL.get(),
+    env.AUTH_SECRET.get(),
+    env.AUTH_GOOGLE_ID.get(),
+    env.AUTH_GOOGLE_SECRET.get(),
+    env.AUTH_GITHUB_ID.get(),
+    env.AUTH_GITHUB_SECRET.get(),
+  ]);
+
+  const emailProvider: EmailConfig = {
+    id: 'email',
+    type: 'email',
+    name: 'Email',
+    from: 'noreply@paysdoc.nl',
+    maxAge: 24 * 60 * 60,
+    async sendVerificationRequest({ identifier, url }) {
+      if (!emailWorkerUrl) throw new Error('EMAIL_WORKER_URL is not set');
+      const response = await fetch(emailWorkerUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${authSecret}`,
+        },
+        body: JSON.stringify({ to: identifier, url }),
+      });
+      if (!response.ok) {
+        throw new Error(`Email worker responded with ${response.status}`);
+      }
+    },
+    options: {},
+  };
+
   return {
     adapter: D1Adapter(env.DB),
     providers: [
       Google({
-        clientId: process.env.AUTH_GOOGLE_ID,
-        clientSecret: process.env.AUTH_GOOGLE_SECRET,
+        clientId: googleId,
+        clientSecret: googleSecret,
       }),
       GitHub({
-        clientId: process.env.AUTH_GITHUB_ID,
-        clientSecret: process.env.AUTH_GITHUB_SECRET,
+        clientId: githubId,
+        clientSecret: githubSecret,
       }),
       emailProvider,
     ],

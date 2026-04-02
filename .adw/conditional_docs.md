@@ -47,3 +47,10 @@
     - When configuring Auth.js Email provider or `sendVerificationRequest`
     - When troubleshooting MailChannels delivery or DNS (SPF, DKIM, domain lockdown)
     - When adding environment variables for `EMAIL_WORKER_URL`, `EMAIL_FROM`, or `AUTH_SECRET`
+- app_docs/feature-07s3yg-migrate-secrets-to-store.md
+  - Conditions:
+    - When working with Cloudflare Secrets Store bindings in wrangler.jsonc
+    - When adding or rotating secrets for the main app or email worker
+    - When troubleshooting `env.BINDING.get()` async secret access in `src/auth.ts` or the email worker
+    - When configuring GitHub Actions deploy workflow secrets
+    - When setting up a new Cloudflare environment and need to create the secrets store
