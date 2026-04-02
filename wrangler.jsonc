@@ -15,6 +15,12 @@
 			"database_id": "138b4abc-dc32-4f08-98a7-87442977a5d3"
 		}
 	],
+	"kv_namespaces": [
+		{
+			"binding": "INTEREST_KV",
+			"id": "<placeholder>"
+		}
+	],
 	"secrets_store_secrets": [
 		{ "binding": "AUTH_SECRET", "secret_name": "AUTH_SECRET", "store_id": "1b912ba249fb4664a0bf42e8b01e4a1d" },
 		{ "binding": "AUTH_GOOGLE_ID", "secret_name": "AUTH_GOOGLE_ID", "store_id": "1b912ba249fb4664a0bf42e8b01e4a1d" },

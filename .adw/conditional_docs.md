@@ -61,3 +61,9 @@
     - When updating the Footer with business details, address, or KVK number
     - When adding or changing the Euphemia UCAS font or @font-face declarations
     - When troubleshooting dark mode appearance or accent color rendering
+- app_docs/feature-ncd0ia-interest-capture-api.md
+  - Conditions:
+    - When working on the /contact page or the InterestForm component
+    - When implementing or extending the POST /api/interest endpoint or KV storage
+    - When creating the INTEREST_KV namespace or wiring Cloudflare KV bindings
+    - When troubleshooting interest email capture, validation, or duplicate submission handling
