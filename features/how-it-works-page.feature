@@ -1,4 +1,4 @@
-@adw-dtuuzc-how-it-works-page-ne
+@adw-8z0la0-how-it-works-page-ne
 Feature: How It Works page
   As a visitor interested in the AI pilot
   I want to understand at a high level how AI-assisted development works
