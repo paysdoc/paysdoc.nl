@@ -18,8 +18,7 @@
   },
   "devDependencies": {
     "@cucumber/cucumber": "^11.3.0",
-    "@cucumber/pretty-formatter": "^3.2.0",
-    "@opennextjs/cloudflare": "^1.18.0",
+"@opennextjs/cloudflare": "^1.18.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
