@@ -11,7 +11,7 @@ Feature: Paysdoc branded navbar with logo and navigation
     Then the Navbar should display the "logo-simpel.png" image
     And the Navbar should display the text "PAYSDOC consultancy"
 
-  @regression
+  @regression @adw-dtuuzc-how-it-works-page-ne
   Scenario: Navbar includes a "How It Works" navigation link
     Given I am a visitor
     When I navigate to the homepage
