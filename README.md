@@ -31,7 +31,6 @@ Open [http://localhost:3000](http://localhost:3000) to see the result.
 ```
 src/
   app/                  # Next.js App Router pages
-    about/page.tsx
     admin/page.tsx
     auth/verify-request/page.tsx
     contact/page.tsx
@@ -42,8 +41,9 @@ src/
       actions.ts        # Server actions for repo CRUD
     login/page.tsx
     services/page.tsx
-    api/auth/[...nextauth]/route.ts
-    api/interest/route.ts # Interest capture API endpoint
+    api/
+      auth/[...nextauth]/route.ts
+      interest/route.ts  # POST endpoint for interest/email capture
     favicon.ico
     globals.css
     layout.tsx
