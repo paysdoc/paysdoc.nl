@@ -26,7 +26,7 @@ Feature: Home page rewrite for non-technical founders
     And an email input field should be visible within the hero
     And a submit button should be visible within the hero
 
-  @adw-camc0h-home-page-rewrite
+  @regression @adw-camc0h-home-page-rewrite
   Scenario: Old CTA buttons are removed from the hero
     Given the visitor navigates to the "/" page
     Then there should be no "Book a Discovery Call" button on the page
@@ -44,7 +44,7 @@ Feature: Home page rewrite for non-technical founders
     And no capability card should contain the term "pull request"
     And no capability card should contain the term "SDLC"
 
-  @adw-camc0h-home-page-rewrite
+  @regression @adw-camc0h-home-page-rewrite
   Scenario: Capability cards do not use emoji icons
     Given the visitor navigates to the "/" page
     Then no capability card should display an emoji icon
