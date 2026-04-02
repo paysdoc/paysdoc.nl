@@ -25,8 +25,13 @@ src/
   app/                  # Next.js App Router pages
     about/page.tsx
     admin/page.tsx
+    auth/verify-request/page.tsx
     contact/page.tsx
-    dashboard/page.tsx
+    dashboard/
+      page.tsx
+      AddRepoForm.tsx
+      RepoList.tsx
+      actions.ts        # Server actions for repo CRUD
     login/page.tsx
     services/page.tsx
     api/auth/[...nextauth]/route.ts
@@ -39,21 +44,31 @@ src/
     Footer.tsx
     Hero.tsx
     Navbar.tsx
+    ProjectCostCard.tsx
     Providers.tsx
     ServiceCard.tsx
     SkillCard.tsx
   lib/                  # Shared utilities and business logic
+    costs.ts            # Cost aggregation helpers
+    repo-url.ts         # GitHub/GitLab URL parsing
     roles.ts            # Role resolution helpers
     __tests__/          # Unit tests (Vitest)
   types/                # TypeScript type augmentations
+    cost.ts             # Cost domain types (D1 row + view types)
     next-auth.d.ts      # Extended Auth.js session/JWT types
   auth.ts               # Auth.js v5 configuration
   middleware.ts         # Route protection middleware
+workers/
+  email-worker/         # Cloudflare Worker — sends magic link emails via Resend
 migrations/             # Cloudflare D1 SQL migrations
 features/               # Cucumber BDD feature files
+e2e-tests/              # E2E test plans
 specs/                  # ADW-generated implementation specs
 app_docs/               # Feature documentation
 public/                 # Static assets (SVGs)
+cloudflare-env.d.ts     # Cloudflare environment type bindings
+vitest.config.ts        # Vitest unit test configuration
+cucumber.js             # Cucumber BDD configuration
 ```
 
 ## Domain Language
