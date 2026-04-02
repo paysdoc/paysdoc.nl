@@ -38,7 +38,8 @@ Adds a GitHub Actions workflow that automatically builds the static Next.js site
 2. Add the following secrets to the GitHub repository under **Settings → Secrets and variables → Actions**:
    - `CLOUDFLARE_API_TOKEN` — Cloudflare API token with Pages deployment permissions
    - `CLOUDFLARE_ACCOUNT_ID` — Cloudflare account ID
-3. Push a commit to `main` — the workflow runs automatically
+3. Set up the Cloudflare Secrets Store with all app secrets (see `README.md` — Secrets Store Setup)
+4. Push a commit to `main` — the workflow runs automatically
 
 ## Configuration
 
@@ -46,6 +47,8 @@ Adds a GitHub Actions workflow that automatically builds the static Next.js site
 |--------|-------------|
 | `CLOUDFLARE_API_TOKEN` | Cloudflare API token with Pages:Edit permission |
 | `CLOUDFLARE_ACCOUNT_ID` | Cloudflare account ID (visible in dashboard URL or account overview) |
+
+App secrets (`AUTH_SECRET`, `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET`, `AUTH_GITHUB_ID`, `AUTH_GITHUB_SECRET`, `EMAIL_WORKER_URL`, `EMAIL_FROM`, `RESEND_API_KEY`) are injected at runtime via Cloudflare Secrets Store bindings — they are not passed as GitHub Actions secrets.
 
 The Cloudflare Pages project name is hardcoded as `paysdoc-nl` in `.github/workflows/deploy.yml`. Change the `--project-name` flag if the project is renamed.
 

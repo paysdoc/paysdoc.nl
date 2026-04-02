@@ -77,8 +77,9 @@ This feature transitions paysdoc.nl from a static export to a server-rendered Ne
 ### Production Setup
 
 1. Create the D1 database and update `wrangler.jsonc` with the real `database_id`
-2. Add all five secrets to Cloudflare Pages environment variables and GitHub Actions secrets
-3. Push to `main` — the workflow applies migrations then deploys
+2. Set up the Cloudflare Secrets Store and create all secrets (see `README.md` — Secrets Store Setup)
+3. Update the `<STORE_ID>` placeholder in `wrangler.jsonc` with the real store ID
+4. Push to `main` — the workflow applies migrations then deploys
 
 ## Configuration
 
@@ -89,6 +90,8 @@ This feature transitions paysdoc.nl from a static export to a server-rendered Ne
 | `AUTH_GOOGLE_SECRET` | Google OAuth 2.0 client secret |
 | `AUTH_GITHUB_ID` | GitHub OAuth App client ID |
 | `AUTH_GITHUB_SECRET` | GitHub OAuth App client secret |
+
+These secrets are accessed at runtime via `env.BINDING.get()` through Cloudflare Secrets Store bindings. For local development they are read from `.dev.vars`.
 
 OAuth callback URLs to register:
 - Google: `https://<your-domain>/api/auth/callback/google`
