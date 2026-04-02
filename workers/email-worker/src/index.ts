@@ -1,6 +1,7 @@
 interface Env {
   EMAIL_FROM: string;
   AUTH_SECRET: string;
+  RESEND_API_KEY: string;
 }
 
 interface EmailRequestBody {
@@ -79,25 +80,24 @@ const handler = {
       return new Response('Missing or invalid "url" field', { status: 400 });
     }
 
-    const payload = {
-      personalizations: [{ to: [{ email: to }] }],
-      from: { email: env.EMAIL_FROM, name: 'paysdoc.nl' },
-      subject: 'Sign in to paysdoc.nl',
-      content: [
-        { type: 'text/plain', value: buildTextEmail(url) },
-        { type: 'text/html', value: buildHtmlEmail(to, url) },
-      ],
-    };
-
-    const response = await fetch('https://api.mailchannels.net/tx/v1/send', {
+    const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
+      headers: {
+        'Authorization': `Bearer ${env.RESEND_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: `paysdoc.nl <${env.EMAIL_FROM}>`,
+        to: [to],
+        subject: 'Sign in to paysdoc.nl',
+        text: buildTextEmail(url),
+        html: buildHtmlEmail(to, url),
+      }),
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('MailChannels error:', response.status, errorText);
+      console.error('Resend error:', response.status, errorText);
       return new Response('Failed to send email', { status: 500 });
     }
 

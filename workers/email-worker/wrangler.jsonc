@@ -6,6 +6,8 @@
     // Sender email address — override in Cloudflare dashboard or .dev.vars
     "EMAIL_FROM": "noreply@paysdoc.nl",
     // Shared secret matching AUTH_SECRET in the main app — set in Cloudflare dashboard
-    "AUTH_SECRET": ""
+    "AUTH_SECRET": "",
+    // Resend API key — set in Cloudflare dashboard or .dev.vars (never commit)
+    "RESEND_API_KEY": ""
   }
 }

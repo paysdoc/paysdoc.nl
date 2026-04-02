@@ -131,7 +131,7 @@ The following GitHub Actions secrets must be configured in the repository:
 
 ## Magic Link Email Setup
 
-Magic link (passwordless) login is implemented via the Auth.js Email provider backed by a Cloudflare Worker that sends emails using [MailChannels](https://mailchannels.com/).
+Magic link (passwordless) login is implemented via the Auth.js Email provider backed by a Cloudflare Worker that sends emails using [Resend](https://resend.com/).
 
 ### Email worker deployment
 
@@ -154,8 +154,9 @@ In addition to the OAuth variables, the following are required:
 | `EMAIL_WORKER_URL` | Main app | Full URL of the deployed email worker |
 | `EMAIL_FROM` | Email worker | Sender address (e.g. `noreply@paysdoc.nl`) |
 | `AUTH_SECRET` | Both | Shared secret — must match between app and worker for request validation |
+| `RESEND_API_KEY` | Email worker | Resend API key for sending emails |
 
-Set `EMAIL_FROM` and `AUTH_SECRET` on the worker via the Cloudflare dashboard (Workers → Settings → Variables) or `wrangler secret put AUTH_SECRET`.
+Set `EMAIL_FROM`, `AUTH_SECRET`, and `RESEND_API_KEY` on the worker via the Cloudflare dashboard (Workers → Settings → Variables) or `wrangler secret put`.
 
 For local development, add to the main app's `.dev.vars`:
 
@@ -168,37 +169,38 @@ And add to `workers/email-worker/.dev.vars`:
 ```
 AUTH_SECRET=your-secret-here
 EMAIL_FROM=noreply@paysdoc.nl
+RESEND_API_KEY=re_your-resend-api-key
 ```
 
 ### DNS configuration (HITL required)
 
 > **Note:** These DNS records must be manually configured by the domain owner. The code can be deployed and reviewed without them, but magic link emails will not be delivered until DNS is in place.
 
+Add your domain in the [Resend dashboard](https://resend.com/domains) and configure the following DNS records in Cloudflare:
+
 #### 1. SPF record
 
-Add a TXT record to the sending domain (e.g. `paysdoc.nl`):
-
-```
-v=spf1 include:relay.mailchannels.net -all
-```
+| Type | Name | Content |
+|------|------|---------|
+| TXT | `send` | `v=spf1 include:amazonses.com ~all` *(copy exact value from Resend)* |
 
 #### 2. DKIM record
 
-Follow the [MailChannels DKIM setup guide](https://support.mailchannels.com/hc/en-us/articles/16918954360845) to generate a DKIM key pair. Add the public key as a TXT record:
+| Type | Name | Content | Proxy |
+|------|------|---------|-------|
+| TXT | `resend._domainkey` | *(copy from Resend dashboard)* | DNS only (grey cloud) |
 
-```
-mailchannels._domainkey.<domain>  TXT  v=DKIM1; k=rsa; p=<public-key>
-```
+#### 3. MX record (sending)
 
-#### 3. Domain lockdown record
+| Type | Name | Mail Server | Priority |
+|------|------|-------------|----------|
+| MX | `send` | *(copy from Resend)* | 10 |
 
-Authorize the Cloudflare Worker to send on behalf of your domain by adding:
+#### 4. DMARC record (recommended)
 
-```
-_mailchannels.<domain>  TXT  v=mc1 cfid=<worker-subdomain>.workers.dev
-```
-
-Replace `<worker-subdomain>` with the subdomain shown in your worker URL.
+| Type | Name | Content |
+|------|------|---------|
+| TXT | `_dmarc` | `v=DMARC1; p=quarantine; rua=mailto:paysdoc@gmail.com` |
 
 ## Scripts
 
