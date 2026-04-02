@@ -9,6 +9,8 @@ interface CloudflareEnv {
   AUTH_GOOGLE_SECRET: SecretStoreSecret;
   AUTH_GITHUB_ID: SecretStoreSecret;
   AUTH_GITHUB_SECRET: SecretStoreSecret;
-  // URL of the deployed email worker (e.g. https://paysdoc-email-worker.<account>.workers.dev)
-  EMAIL_WORKER_URL: SecretStoreSecret;
+  COST_API_TOKEN: SecretStoreSecret;
+  // Vars (plain strings, not secrets)
+  EMAIL_WORKER_URL: string;
+  COST_API_URL: string;
 }

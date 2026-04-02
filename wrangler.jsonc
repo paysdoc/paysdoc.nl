@@ -6,7 +6,7 @@
 	],
 	"vars": {
 		"COST_API_URL": "https://costs.paysdoc.nl",
-		"EMAIL_WORKER_URL": "https://paysdoc-email-worker.<account>.workers.dev"
+		"EMAIL_WORKER_URL": "https://email.paysdoc.workers.dev"
 	},
 	"d1_databases": [
 		{

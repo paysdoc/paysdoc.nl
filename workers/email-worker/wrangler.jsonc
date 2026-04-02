@@ -1,10 +1,10 @@
 {
-  "name": "paysdoc-email-worker",
+  "name": "email",
   "compatibility_date": "2025-04-01",
   "compatibility_flags": ["nodejs_compat"],
   "secrets_store_secrets": [
-    { "binding": "AUTH_SECRET", "secret_name": "AUTH_SECRET", "store_id": "<STORE_ID>" },
-    { "binding": "RESEND_API_KEY", "secret_name": "RESEND_API_KEY", "store_id": "<STORE_ID>" },
-    { "binding": "EMAIL_FROM", "secret_name": "EMAIL_FROM", "store_id": "<STORE_ID>" }
+    { "binding": "AUTH_SECRET", "secret_name": "AUTH_SECRET", "store_id": "1b912ba249fb4664a0bf42e8b01e4a1d" },
+    { "binding": "RESEND_API_KEY", "secret_name": "RESEND_API_KEY", "store_id": "1b912ba249fb4664a0bf42e8b01e4a1d" },
+    { "binding": "EMAIL_FROM", "secret_name": "EMAIL_FROM", "store_id": "1b912ba249fb4664a0bf42e8b01e4a1d" }
   ]
 }

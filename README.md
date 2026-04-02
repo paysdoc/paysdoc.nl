@@ -180,7 +180,7 @@ npm install
 npx wrangler deploy
 ```
 
-After deploying, Cloudflare will print the worker URL (e.g. `https://paysdoc-email-worker.<account>.workers.dev`). Set this as `EMAIL_WORKER_URL` in the main app environment.
+After deploying, Cloudflare will print the worker URL (e.g. `https://email.paysdoc.workers.dev`). Set this as `EMAIL_WORKER_URL` in the main app environment.
 
 ### Required environment variables
 
@@ -198,7 +198,7 @@ In addition to the OAuth variables, the following are required:
 For local development, add to the main app's `.dev.vars`:
 
 ```
-EMAIL_WORKER_URL=https://paysdoc-email-worker.<account>.workers.dev
+EMAIL_WORKER_URL=https://email.paysdoc.workers.dev
 ```
 
 And add to `workers/email-worker/.dev.vars`:
