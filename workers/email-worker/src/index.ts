@@ -1,5 +1,5 @@
 interface Env {
-  EMAIL_FROM: { get(): Promise<string> };
+  EMAIL_FROM: string;
   AUTH_SECRET: { get(): Promise<string> };
   RESEND_API_KEY: { get(): Promise<string> };
 }
@@ -59,10 +59,10 @@ const handler = {
       return new Response('Method not allowed', { status: 405 });
     }
 
-    const [authSecret, resendApiKey, emailFrom] = await Promise.all([
+    const emailFrom = env.EMAIL_FROM;
+    const [authSecret, resendApiKey] = await Promise.all([
       env.AUTH_SECRET.get(),
       env.RESEND_API_KEY.get(),
-      env.EMAIL_FROM.get(),
     ]);
 
     const authHeader = request.headers.get('Authorization');
