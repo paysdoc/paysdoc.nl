@@ -67,6 +67,12 @@
     - When implementing or extending the POST /api/interest endpoint or KV storage
     - When creating the INTEREST_KV namespace or wiring Cloudflare KV bindings
     - When troubleshooting interest email capture, validation, or duplicate submission handling
+- app_docs/feature-8z0la0-how-it-works-page.md
+  - Conditions:
+    - When working on the /how-it-works page or its content
+    - When adding or modifying the three-phase AI development concept copy
+    - When integrating InterestForm as a CTA on marketing pages
+    - When troubleshooting the coming-soon framing or phase card layout
 - app_docs/feature-6q5dst-services-page-rewrite.md
   - Conditions:
     - When working on the /services page or its layout and copy
