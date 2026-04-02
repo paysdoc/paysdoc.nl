@@ -73,3 +73,9 @@
     - When adding or modifying the three-phase AI development concept copy
     - When integrating InterestForm as a CTA on marketing pages
     - When troubleshooting the coming-soon framing or phase card layout
+- app_docs/feature-6q5dst-services-page-rewrite.md
+  - Conditions:
+    - When working on the /services page or its layout and copy
+    - When extending or modifying the ServiceCard component (badge, CTA, variant props)
+    - When adding new service tiers or updating the industries list
+    - When troubleshooting badge styling or CTA alignment in service cards
