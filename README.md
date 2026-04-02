@@ -43,6 +43,7 @@ src/
     login/page.tsx
     services/page.tsx
     api/auth/[...nextauth]/route.ts
+    api/interest/route.ts  # Interest capture POST endpoint
     favicon.ico
     globals.css
     layout.tsx
