@@ -1,42 +1,36 @@
 import Hero from '@/components/Hero';
 import SkillCard from '@/components/SkillCard';
 
-const skills = [
+const capabilities = [
   {
-    icon: '\u{1F916}',
-    title: 'AI Agent Orchestration',
+    title: 'Faster Time to Market',
     description:
-      'Multi-agent workflows that autonomously plan, implement, test, and review code changes.',
+      'Go from idea to working software in weeks, not months. AI accelerates development while experienced engineers ensure quality.',
   },
   {
-    icon: '\u{1F504}',
-    title: 'Full SDLC Automation',
+    title: 'Built-In Quality Assurance',
     description:
-      'From issue creation to merged pull request — planning, building, testing, reviewing, and documenting.',
+      'Every feature is automatically tested and reviewed before delivery. No shortcuts, no technical debt surprises.',
   },
   {
-    icon: '\u{1F6E0}',
-    title: 'TypeScript & Node.js',
+    title: 'Transparent Progress',
     description:
-      'Production-grade TypeScript systems with strong typing, modular architecture, and comprehensive testing.',
+      'See exactly what\'s being built and why. Clear updates in plain language, not engineering reports.',
   },
   {
-    icon: '\u{1F310}',
-    title: 'GitHub Integration',
+    title: 'Scalable from Day One',
     description:
-      'Webhook-driven automation that responds to issues, comments, and PRs in real time.',
+      'Architecture designed to grow with your business. Start small, scale confidently as your user base grows.',
   },
   {
-    icon: '\u{1F9EA}',
-    title: 'Automated Testing',
+    title: 'Full-Stack Capability',
     description:
-      'Unit, integration, and E2E test suites with automatic failure resolution and retry logic.',
+      'From database to user interface, one team handles everything. No coordination headaches between multiple vendors.',
   },
   {
-    icon: '\u{1F4CB}',
-    title: 'Auto Documentation',
+    title: 'Nearly 30 Years of Experience',
     description:
-      'AI-generated technical documentation, conditional docs, and change summaries with every release.',
+      'Proven track record across banking, retail, energy, and government. Enterprise-grade expertise applied to your startup.',
   },
 ];
 
@@ -46,11 +40,11 @@ export default function Home() {
       <Hero />
       <section className="pb-24">
         <h2 className="text-2xl font-bold text-center mb-12">
-          What I Build
+          Why Paysdoc
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {skills.map((skill) => (
-            <SkillCard key={skill.title} {...skill} />
+          {capabilities.map((capability) => (
+            <SkillCard key={capability.title} {...capability} />
           ))}
         </div>
       </section>
