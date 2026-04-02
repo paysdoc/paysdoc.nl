@@ -54,3 +54,9 @@
     - When troubleshooting `env.BINDING.get()` async secret access in `src/auth.ts` or the email worker
     - When configuring GitHub Actions deploy workflow secrets
     - When setting up a new Cloudflare environment and need to create the secrets store
+- app_docs/feature-ncd0ia-interest-capture-api.md
+  - Conditions:
+    - When working on the /contact page or the InterestForm component
+    - When implementing or extending the POST /api/interest endpoint or KV storage
+    - When creating the INTEREST_KV namespace or wiring Cloudflare KV bindings
+    - When troubleshooting interest email capture, validation, or duplicate submission handling
