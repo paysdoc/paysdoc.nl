@@ -67,3 +67,9 @@
     - When implementing or extending the POST /api/interest endpoint or KV storage
     - When creating the INTEREST_KV namespace or wiring Cloudflare KV bindings
     - When troubleshooting interest email capture, validation, or duplicate submission handling
+- app_docs/feature-6q5dst-services-page-rewrite.md
+  - Conditions:
+    - When working on the /services page or its layout and copy
+    - When extending or modifying the ServiceCard component (badge, CTA, variant props)
+    - When adding new service tiers or updating the industries list
+    - When troubleshooting badge styling or CTA alignment in service cards
