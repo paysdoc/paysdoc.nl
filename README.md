@@ -48,7 +48,7 @@ src/
     layout.tsx
     page.tsx
   components/           # Shared UI components
-    CalEmbed.tsx
+    InterestForm.tsx
     Footer.tsx
     Hero.tsx
     Navbar.tsx
