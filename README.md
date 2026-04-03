@@ -31,9 +31,11 @@ Open [http://localhost:3000](http://localhost:3000) to see the result.
 ```
 src/
   app/                  # Next.js App Router pages
+    about/page.tsx
     admin/page.tsx
     auth/verify-request/page.tsx
     contact/page.tsx
+    how-it-works/page.tsx
     dashboard/
       page.tsx
       AddRepoForm.tsx
@@ -154,34 +156,23 @@ The following GitHub Actions secrets must be configured in the repository:
 | `CLOUDFLARE_API_TOKEN` | Cloudflare API token with Pages deployment permissions |
 | `CLOUDFLARE_ACCOUNT_ID` | Cloudflare account ID |
 
-All other app secrets (`AUTH_SECRET`, `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET`, `AUTH_GITHUB_ID`, `AUTH_GITHUB_SECRET`, `EMAIL_WORKER_URL`, `EMAIL_FROM`, `RESEND_API_KEY`) are managed via Cloudflare Secrets Store — see **Secrets Store Setup** below.
+All other app secrets (`AUTH_SECRET`, `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET`, `AUTH_GITHUB_ID`, `AUTH_GITHUB_SECRET`) must be set as **environment variables** in the Cloudflare Pages project settings (Settings → Environment variables). `EMAIL_WORKER_URL` is already set in `wrangler.jsonc` as a plain var.
 
-## Secrets Store Setup
+## Secrets Setup
 
-App secrets are stored in Cloudflare Secrets Store and injected at runtime via `secrets_store_secrets` bindings. This must be set up once before the first production deployment.
+Set the following as environment variables in Cloudflare Pages (Settings → Environment variables) for both **Production** and **Preview**:
 
-1. Create the store:
+| Variable | Description |
+|----------|-------------|
+| `AUTH_SECRET` | Random secret used to sign/encrypt session tokens (generate with `openssl rand -base64 32`) |
+| `AUTH_GOOGLE_ID` | Google OAuth client ID |
+| `AUTH_GOOGLE_SECRET` | Google OAuth client secret |
+| `AUTH_GITHUB_ID` | GitHub OAuth app client ID |
+| `AUTH_GITHUB_SECRET` | GitHub OAuth app client secret |
 
-   ```bash
-   npx wrangler secrets-store store create paysdoc-secrets --remote
-   ```
+The email worker (`workers/email-worker/`) uses Cloudflare Secrets Store for `AUTH_SECRET` and `RESEND_API_KEY`. See `workers/email-worker/wrangler.jsonc` for the store binding configuration.
 
-2. Copy the returned store ID and replace `<STORE_ID>` in both `wrangler.jsonc` files (root and `workers/email-worker/`).
-
-3. Create each secret in the store:
-
-   ```bash
-   npx wrangler secrets-store secret create AUTH_SECRET --store-id <STORE_ID> --remote
-   npx wrangler secrets-store secret create AUTH_GOOGLE_ID --store-id <STORE_ID> --remote
-   npx wrangler secrets-store secret create AUTH_GOOGLE_SECRET --store-id <STORE_ID> --remote
-   npx wrangler secrets-store secret create AUTH_GITHUB_ID --store-id <STORE_ID> --remote
-   npx wrangler secrets-store secret create AUTH_GITHUB_SECRET --store-id <STORE_ID> --remote
-   npx wrangler secrets-store secret create EMAIL_WORKER_URL --store-id <STORE_ID> --remote
-   npx wrangler secrets-store secret create RESEND_API_KEY --store-id <STORE_ID> --remote
-   npx wrangler secrets-store secret create EMAIL_FROM --store-id <STORE_ID> --remote
-   ```
-
-4. Local development continues to use `.dev.vars` files — Secrets Store does not work with `wrangler dev` locally.
+Local development uses `.dev.vars` files — Cloudflare env vars are not available locally.
 
 ## Magic Link Email Setup
 
@@ -210,7 +201,7 @@ In addition to the OAuth variables, the following are required:
 | `AUTH_SECRET` | Both | Shared secret — must match between app and worker for request validation |
 | `RESEND_API_KEY` | Email worker | Resend API key for sending emails |
 
-`EMAIL_FROM`, `AUTH_SECRET`, and `RESEND_API_KEY` are managed via Cloudflare Secrets Store (see **Secrets Store Setup** above). They no longer need to be set in the Cloudflare dashboard.
+`AUTH_SECRET` and `RESEND_API_KEY` for the email worker are managed via Cloudflare Secrets Store (see `workers/email-worker/wrangler.jsonc`). `EMAIL_FROM` is a plain var set in the same file.
 
 For local development, add to the main app's `.dev.vars`:
 
