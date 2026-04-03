@@ -21,13 +21,5 @@
 			"binding": "INTEREST_KV",
 			"id": "<placeholder>"
 		}
-	],
-	"secrets_store_secrets": [
-		{ "binding": "AUTH_SECRET", "secret_name": "AUTH_SECRET", "store_id": "1b912ba249fb4664a0bf42e8b01e4a1d" },
-		{ "binding": "AUTH_GOOGLE_ID", "secret_name": "AUTH_GOOGLE_ID", "store_id": "1b912ba249fb4664a0bf42e8b01e4a1d" },
-		{ "binding": "AUTH_GOOGLE_SECRET", "secret_name": "AUTH_GOOGLE_SECRET", "store_id": "1b912ba249fb4664a0bf42e8b01e4a1d" },
-		{ "binding": "AUTH_GITHUB_ID", "secret_name": "AUTH_GITHUB_ID", "store_id": "1b912ba249fb4664a0bf42e8b01e4a1d" },
-		{ "binding": "AUTH_GITHUB_SECRET", "secret_name": "AUTH_GITHUB_SECRET", "store_id": "1b912ba249fb4664a0bf42e8b01e4a1d" },
-		{ "binding": "COST_API_TOKEN", "secret_name": "COST_API_TOKEN", "store_id": "1b912ba249fb4664a0bf42e8b01e4a1d" }
 	]
 }
