@@ -30,7 +30,7 @@ export default function Contact() {
           <p>
             LinkedIn:{' '}
             <a
-              href="https://linkedin.com/company/paysdoc"
+              href="https://www.linkedin.com/in/martinkoster/"
               className="text-[var(--accent)] hover:underline"
             >
               linkedin.com/company/paysdoc
