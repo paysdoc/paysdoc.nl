@@ -4,21 +4,18 @@ Feature: Paysdoc burgundy/magenta color palette
   I want to see the Paysdoc website styled in the burgundy/magenta brand palette
   So that the visual identity is consistent with the Paysdoc huisstijl
 
-  @regression
   Scenario: Light mode uses burgundy/magenta accent colors
     Given I am a visitor using light mode
     When I navigate to the homepage
     Then the CSS accent color variable should use a burgundy or magenta hue
     And the accent color should not be blue "#2563eb"
 
-  @regression
   Scenario: Dark mode uses burgundy/magenta accent colors
     Given I am a visitor using dark mode
     When I navigate to the homepage
     Then the CSS accent color variable should use a burgundy or magenta hue
     And the accent color should not be blue "#3b82f6"
 
-  @regression
   Scenario: No remaining references to the old blue color scheme
     Given the application source code is inspected
     Then the CSS should not contain the color "#2563eb"

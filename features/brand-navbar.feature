@@ -4,20 +4,18 @@ Feature: Paysdoc branded navbar with logo and navigation
   I want to see the Paysdoc logo and brand name in the navbar
   So that I immediately recognise the Paysdoc brand identity
 
-  @regression
   Scenario: Navbar displays Paysdoc logo icon alongside styled brand text
     Given I am a visitor
     When I navigate to the homepage
     Then the Navbar should display the "logo-simpel.png" image
     And the Navbar should display the text "PAYSDOC consultancy"
 
-  @regression @adw-8z0la0-how-it-works-page-ne
+  @adw-8z0la0-how-it-works-page-ne
   Scenario: Navbar includes a "How It Works" navigation link
     Given I am a visitor
     When I navigate to the homepage
     Then the Navbar should contain a "How It Works" link
 
-  @regression
   Scenario: Dashboard and Admin links are hidden from unauthenticated visitors
     Given I am an unauthenticated user
     When I navigate to the homepage

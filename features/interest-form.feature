@@ -4,13 +4,11 @@ Feature: InterestForm Component
   I want a form to register my interest in the Paysdoc pilot
   So that I can be contacted when the pilot launches
 
-  @regression
   Scenario: Form displays email input and submit button
     Given the visitor is viewing the InterestForm component
     Then an email input field should be visible
     And a submit button should be visible
 
-  @regression
   Scenario: Successful email submission shows confirmation
     Given the visitor is viewing the InterestForm component
     When the visitor enters "interested@example.com" in the email field
@@ -32,7 +30,6 @@ Feature: InterestForm Component
     Then a validation error message should be displayed
     And no request should be sent to the server
 
-  @regression
   Scenario: Server error displays error state
     Given the visitor is viewing the InterestForm component
     And the API endpoint "/api/interest" will return a 500 error

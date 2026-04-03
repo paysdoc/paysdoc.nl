@@ -4,14 +4,13 @@ Feature: Authentication via social login
   I want to log in using my Google or GitHub account
   So that I can access protected areas of the site
 
-  @regression @adw-6otp7j-magic-link-login-ema
+  @adw-6otp7j-magic-link-login-ema
   Scenario: Login page is accessible
     Given I am an unauthenticated user
     When I navigate to the login page
     Then I should see a "Sign in with Google" button
     And I should see a "Sign in with GitHub" button
 
-  @regression
   Scenario: Google OAuth login flow works end-to-end
     Given I am an unauthenticated user
     When I navigate to the login page
@@ -21,7 +20,6 @@ Feature: Authentication via social login
     Then I should be redirected back to the application
     And I should be authenticated
 
-  @regression
   Scenario: GitHub OAuth login flow works end-to-end
     Given I am an unauthenticated user
     When I navigate to the login page
@@ -38,7 +36,6 @@ Feature: Authentication via social login
     Then I should be redirected to the homepage
     And I should be unauthenticated
 
-  @regression
   Scenario: Session persists across page reloads
     Given I am an authenticated user
     When I reload the page

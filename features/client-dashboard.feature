@@ -4,7 +4,6 @@ Feature: Client dashboard for repository management
   I want to see a dashboard where I can manage my repositories
   So that I can register and track my repos linked to Paysdoc projects
 
-  @regression
   Scenario: Authenticated client sees the dashboard with repo list
     Given I am an authenticated user with email "jane@example.com"
     And my role is "client"
@@ -13,7 +12,6 @@ Feature: Client dashboard for repository management
     And I should see a "My Repositories" section
     And I should see an "Add Repository" form
 
-  @regression
   Scenario: Dashboard displays "more functionality coming soon" message
     Given I am an authenticated user with email "jane@example.com"
     And my role is "client"

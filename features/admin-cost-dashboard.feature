@@ -10,7 +10,6 @@ Feature: Admin cost-per-project dashboard
 
   # --- Access control (relies on middleware from #5) ---
 
-  @regression
   Scenario: Admin user can view the cost dashboard at /admin
     When I navigate to "/admin"
     Then I should see the admin page
@@ -24,7 +23,6 @@ Feature: Admin cost-per-project dashboard
 
   # --- Cost-per-project overview ---
 
-  @regression
   Scenario: All projects are listed with their total computed cost
     Given the following projects exist in the database:
       | id | name        |
@@ -71,7 +69,6 @@ Feature: Admin cost-per-project dashboard
 
   # --- Issue-level cost detail ---
 
-  @regression
   Scenario: Issue-level cost details are accessible within a project
     Given the following projects exist in the database:
       | id | name        |

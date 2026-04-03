@@ -4,14 +4,12 @@ Feature: About page — consultant profile
   I want to see a professional profile of the consultant behind Paysdoc
   So that I can evaluate their experience, expertise, and track record
 
-  @regression
   Scenario: About page displays professional profile with experience positioning
     Given the visitor navigates to the "/about" page
     Then the page should display a professional profile of "Martin Koster"
     And the page should mention "nearly 30 years" of experience
     And the profile should position Martin as a full-stack developer
 
-  @regression
   Scenario: About page lists industries served
     Given the visitor navigates to the "/about" page
     Then the following industries should be listed:
@@ -22,7 +20,6 @@ Feature: About page — consultant profile
       | government |
       | airline    |
 
-  @regression
   Scenario: About page shows key project highlights
     Given the visitor navigates to the "/about" page
     Then the page should mention the following project highlights:
@@ -38,7 +35,6 @@ Feature: About page — consultant profile
     And no proprietary system names or internal architecture details should be present
     And no references to "ADW" or "agent" internals should be present
 
-  @regression
   Scenario: About page displays technology expertise
     Given the visitor navigates to the "/about" page
     Then the page should list the following technologies:

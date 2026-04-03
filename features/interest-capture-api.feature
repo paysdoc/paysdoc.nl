@@ -7,7 +7,6 @@ Feature: Interest Capture API
   Background:
     Given the KV namespace "INTEREST_KV" is bound in the Cloudflare environment
 
-  @regression
   Scenario: Valid email is stored and returns 201
     When a POST request is sent to "/api/interest" with body:
       | email              |
@@ -16,7 +15,6 @@ Feature: Interest Capture API
     And the response body should contain a success message
     And the email "visitor@example.com" should be stored in KV with a timestamp
 
-  @regression
   Scenario: Invalid email returns 400
     When a POST request is sent to "/api/interest" with body:
       | email       |
@@ -38,7 +36,6 @@ Feature: Interest Capture API
       """
     Then the response status should be 400
 
-  @regression
   Scenario: Duplicate email submission is idempotent
     Given the email "returning@example.com" is already stored in KV
     When a POST request is sent to "/api/interest" with body:

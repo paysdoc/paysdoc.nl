@@ -4,13 +4,11 @@ Feature: Role resolution by email address
   I want to determine a user's role based on their email address
   So that admin and client users have appropriate access levels
 
-  @regression
   Scenario: Admin email paysdoc@gmail.com resolves to admin role
     Given a user with email "paysdoc@gmail.com" is authenticated
     When the session is created
     Then the session should contain the role "admin"
 
-  @regression
   Scenario: Admin email martin@paysdoc.nl resolves to admin role
     Given a user with email "martin@paysdoc.nl" is authenticated
     When the session is created

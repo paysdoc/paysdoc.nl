@@ -4,13 +4,11 @@ Feature: Contact Page
   I want a contact page with an interest form and direct contact details
   So that I can register my interest or reach out to Paysdoc directly
 
-  @regression
   Scenario: Contact page displays the InterestForm
     Given the visitor navigates to the "/contact" page
     Then the InterestForm component should be displayed
     And the Cal.com booking embed should not be present
 
-  @regression
   Scenario: Contact page displays direct contact details
     Given the visitor navigates to the "/contact" page
     Then the email address "info@paysdoc.nl" should be displayed

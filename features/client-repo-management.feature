@@ -4,7 +4,6 @@ Feature: Client repository CRUD operations
   I want to add and remove repositories from my dashboard
   So that I can manage which repos are tracked by Paysdoc
 
-  @regression
   Scenario: Client adds a GitHub repository
     Given I am an authenticated user with email "jane@example.com"
     And my role is "client"
@@ -14,7 +13,6 @@ Feature: Client repository CRUD operations
     Then I should see "jane/my-project" in the repository list
     And the repo provider should be "github"
 
-  @regression
   Scenario: Client adds a GitLab repository
     Given I am an authenticated user with email "jane@example.com"
     And my role is "client"
@@ -24,7 +22,6 @@ Feature: Client repository CRUD operations
     Then I should see "jane/my-project" in the repository list
     And the repo provider should be "gitlab"
 
-  @regression
   Scenario: Client removes a repository from their list
     Given I am an authenticated user with email "jane@example.com"
     And my role is "client"

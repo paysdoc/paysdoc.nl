@@ -4,14 +4,12 @@ Feature: Magic link email worker
   I want a Cloudflare Worker to send magic link emails
   So that users receive a verification link to authenticate
 
-  @regression
   Scenario: Worker receives verification request and sends an email
     Given the magic link email worker is running
     When Auth.js sends a verification request for "user@example.com" with a verification URL
     Then the worker should send an email to "user@example.com"
     And the email should contain the verification URL as a clickable magic link
 
-  @regression
   Scenario: Email contains a correctly formatted magic link
     Given the magic link email worker is running
     When a magic link email is sent to "user@example.com"

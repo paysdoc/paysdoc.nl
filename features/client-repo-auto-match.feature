@@ -4,7 +4,6 @@ Feature: Auto-match repository to project
   I want to automatically link a client repo to a project when the URLs match
   So that clients can see which of their repos are associated with Paysdoc projects
 
-  @regression
   Scenario: Adding a repo that matches an existing project sets project_id
     Given I am an authenticated user with email "jane@example.com"
     And my role is "client"
@@ -15,7 +14,6 @@ Feature: Auto-match repository to project
     Then the repo should be linked to the project with repo_url "https://github.com/jane/my-project"
     And I should see the linked project name for "jane/my-project"
 
-  @regression
   Scenario: Adding a repo with no matching project leaves project_id null
     Given I am an authenticated user with email "jane@example.com"
     And my role is "client"

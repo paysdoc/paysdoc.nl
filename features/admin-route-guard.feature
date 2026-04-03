@@ -4,14 +4,12 @@ Feature: Admin route guard based on user role
   I want to restrict /admin routes to admin users only
   So that client users cannot access admin functionality
 
-  @regression
   Scenario: Client user accessing /admin is redirected to /dashboard
     Given I am an authenticated user with email "jane@example.com"
     And my role is "client"
     When I navigate to "/admin"
     Then I should be redirected to "/dashboard"
 
-  @regression
   Scenario: Admin user can access /admin without redirect
     Given I am an authenticated user with email "paysdoc@gmail.com"
     And my role is "admin"

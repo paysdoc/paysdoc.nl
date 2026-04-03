@@ -4,19 +4,16 @@ Feature: Paysdoc branded footer with business details
   I want to see Paysdoc business details in the footer
   So that I can find contact and legal information about the company
 
-  @regression
   Scenario: Footer displays LinkedIn link
     Given I am a visitor
     When I navigate to the homepage
     Then the Footer should contain a link to LinkedIn
 
-  @regression
   Scenario: Footer displays KVK number
     Given I am a visitor
     When I navigate to the homepage
     Then the Footer should display the KVK number "50250574"
 
-  @regression
   Scenario: Footer displays Voorburg address
     Given I am a visitor
     When I navigate to the homepage

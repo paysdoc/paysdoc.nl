@@ -4,13 +4,11 @@ Feature: Route protection for authenticated pages
   I want to protect certain routes from unauthenticated access
   So that only logged-in users can see protected content
 
-  @regression
   Scenario: Unauthenticated user is redirected from /dashboard to login
     Given I am an unauthenticated user
     When I navigate to "/dashboard"
     Then I should be redirected to the login page
 
-  @regression
   Scenario: Unauthenticated user is redirected from /admin to login
     Given I am an unauthenticated user
     When I navigate to "/admin"

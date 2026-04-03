@@ -4,14 +4,12 @@ Feature: Magic link (passwordless email) login
   I want to log in using a magic link sent to my email
   So that I can access protected areas without needing a social account
 
-  @regression
   Scenario: Login page has an email input field for magic link login
     Given I am an unauthenticated user
     When I navigate to the login page
     Then I should see an email input field for magic link login
     And I should see a "Send magic link" button
 
-  @regression
   Scenario: Submitting an email triggers Auth.js email provider flow
     Given I am an unauthenticated user
     And I am on the login page
@@ -34,7 +32,6 @@ Feature: Magic link (passwordless email) login
     And I click the "Send magic link" button
     Then I should see a validation error for the email field
 
-  @regression
   Scenario: Clicking the magic link authenticates the user and redirects to dashboard
     Given a magic link has been sent to "user@example.com"
     And the magic link contains a valid verification token

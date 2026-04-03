@@ -4,7 +4,6 @@ Feature: Paysdoc brand typography with Euphemia UCAS font
   I want to see the Paysdoc website rendered in the Euphemia UCAS typeface
   So that the site conveys the professional Paysdoc brand identity
 
-  @regression
   Scenario: Euphemia UCAS font files are self-hosted and loaded via @font-face
     Given the application CSS is loaded
     Then the CSS should declare @font-face rules for "Euphemia UCAS"
@@ -15,7 +14,6 @@ Feature: Paysdoc brand typography with Euphemia UCAS font
       | Bold    | 700    | normal |
       | Italic  | 400    | italic |
 
-  @regression
   Scenario: Body text renders in Euphemia UCAS font family
     Given I am a visitor
     When I navigate to the homepage

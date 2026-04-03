@@ -4,14 +4,12 @@ Feature: How It Works page
   I want to understand at a high level how AI-assisted development works
   So that I can decide if it is relevant to my project
 
-  @regression
   Scenario: How It Works page loads at the correct URL with metadata
     Given the visitor navigates to the "/how-it-works" page
     Then the page should load successfully
     And the page should have appropriate metadata including a title and description
     And the page title should reference AI-assisted development
 
-  @regression
   Scenario: Three-phase concept is presented in business language
     Given the visitor navigates to the "/how-it-works" page
     Then the page should display three distinct phases
@@ -20,13 +18,11 @@ Feature: How It Works page
     And the third phase should describe expert quality assurance
     And the page should not contain engineering jargon such as "CI/CD", "webhook", "PR", or "pipeline"
 
-  @regression
   Scenario: Page has clear coming soon framing
     Given the visitor navigates to the "/how-it-works" page
     Then the page should display "coming soon" or equivalent teaser language
     And the page should not promise features as currently available
 
-  @regression
   Scenario: InterestForm is integrated as a call-to-action
     Given the visitor navigates to the "/how-it-works" page
     Then the InterestForm component should be displayed

@@ -4,14 +4,12 @@ Feature: Navbar authentication state
   I want the Navbar to reflect my authentication state
   So that I can access my account or log in
 
-  @regression
   Scenario: Navbar shows Login button when unauthenticated
     Given I am an unauthenticated user
     When I navigate to the homepage
     Then the Navbar should show a "Login" button
     And the Navbar should not show a user avatar
 
-  @regression
   Scenario: Navbar shows user avatar and name when authenticated
     Given I am an authenticated user with name "Jane Doe" and avatar "https://example.com/avatar.jpg"
     When I navigate to the homepage

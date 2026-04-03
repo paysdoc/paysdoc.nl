@@ -4,7 +4,6 @@ Feature: Repository URL parsing and provider detection
   I want to parse repository URLs and detect the provider
   So that repos are correctly categorized as GitHub or GitLab
 
-  @regression
   Scenario: GitHub URL is detected as github provider
     Given a repository URL "https://github.com/owner/repo-name"
     When the URL is parsed

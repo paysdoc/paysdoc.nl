@@ -7,13 +7,13 @@ Feature: Services Page
   Background:
     Given the visitor navigates to the "/services" page
 
-  @regression @adw-2jhq2i-services-page-rewrit
+  @adw-2jhq2i-services-page-rewrit
   Scenario: Page displays two distinct service tiers
     Then the page should display exactly 2 service cards
     And one card should be titled "AI-Powered Development"
     And one card should be titled "Full-Stack Consulting"
 
-  @regression @adw-2jhq2i-services-page-rewrit
+  @adw-2jhq2i-services-page-rewrit
   Scenario: AI-Powered Development card has coming-soon framing
     Then the "AI-Powered Development" card should be visible
     And the card should indicate it is a pilot or coming soon
@@ -21,7 +21,7 @@ Feature: Services Page
     And the card should mention that AI builds the application
     And the card should mention experienced engineer oversight for quality
 
-  @regression @adw-2jhq2i-services-page-rewrit
+  @adw-2jhq2i-services-page-rewrit
   Scenario: AI-Powered Development card nudges visitor to register interest
     Then the "AI-Powered Development" card should contain a call to action to register interest
     And the call to action should link to the interest registration
@@ -34,13 +34,13 @@ Feature: Services Page
     And the card should not contain the text "pipeline"
     And the card should not contain the text "monorepo"
 
-  @regression @adw-2jhq2i-services-page-rewrit
+  @adw-2jhq2i-services-page-rewrit
   Scenario: Full-Stack Consulting card shows available-now status
     Then the "Full-Stack Consulting" card should be visible
     And the card should indicate the service is available now
     And the card should mention nearly 30 years of experience
 
-  @regression @adw-2jhq2i-services-page-rewrit
+  @adw-2jhq2i-services-page-rewrit
   Scenario: Industries served are listed for credibility
     Then the page should list the following industries:
       | industry   |
@@ -56,7 +56,7 @@ Feature: Services Page
     And the card should not contain the text "type-safe API"
     And the card should not contain the text "CI/CD"
 
-  @regression @adw-2jhq2i-services-page-rewrit
+  @adw-2jhq2i-services-page-rewrit
   Scenario: Book a Discovery Call CTA is removed
     Then the page should not contain a "Book a Discovery Call" button or link
 
