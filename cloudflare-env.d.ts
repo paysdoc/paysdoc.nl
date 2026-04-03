@@ -1,17 +1,12 @@
-interface SecretStoreSecret {
-  get(): Promise<string>;
-}
-
 interface CloudflareEnv {
   DB: D1Database;
   INTEREST_KV: KVNamespace;
-  AUTH_SECRET: SecretStoreSecret;
-  AUTH_GOOGLE_ID: SecretStoreSecret;
-  AUTH_GOOGLE_SECRET: SecretStoreSecret;
-  AUTH_GITHUB_ID: SecretStoreSecret;
-  AUTH_GITHUB_SECRET: SecretStoreSecret;
-  COST_API_TOKEN: SecretStoreSecret;
-  // Vars (plain strings, not secrets)
+  AUTH_SECRET: string;
+  AUTH_GOOGLE_ID: string;
+  AUTH_GOOGLE_SECRET: string;
+  AUTH_GITHUB_ID: string;
+  AUTH_GITHUB_SECRET: string;
+  COST_API_TOKEN: string;
   EMAIL_WORKER_URL: string;
   COST_API_URL: string;
 }

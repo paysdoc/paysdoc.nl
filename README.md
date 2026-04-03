@@ -106,7 +106,7 @@ Authentication is handled by [Auth.js v5](https://authjs.dev/) with Google and G
 | `AUTH_GITHUB_ID` | GitHub OAuth app client ID |
 | `AUTH_GITHUB_SECRET` | GitHub OAuth app client secret |
 
-For local development, create a `.env.local` file at the project root (git-ignored):
+For local development, create a `.dev.vars` file at the project root (git-ignored) with the auth variables — this is read by `getPlatformProxy` onto the Cloudflare `env` object:
 
 ```
 AUTH_SECRET=your-secret-here
@@ -115,8 +115,6 @@ AUTH_GOOGLE_SECRET=your-google-client-secret
 AUTH_GITHUB_ID=your-github-client-id
 AUTH_GITHUB_SECRET=your-github-client-secret
 ```
-
-Alternatively, use a `.dev.vars` file (Cloudflare convention) with the same variables — both are read during local development.
 
 ### D1 database setup
 
@@ -170,7 +168,7 @@ Set the following as environment variables in Cloudflare Pages (Settings → Env
 | `AUTH_GITHUB_ID` | GitHub OAuth app client ID |
 | `AUTH_GITHUB_SECRET` | GitHub OAuth app client secret |
 
-The email worker (`workers/email-worker/`) uses Cloudflare Secrets Store for `AUTH_SECRET` and `RESEND_API_KEY`. See `workers/email-worker/wrangler.jsonc` for the store binding configuration.
+The email worker (`workers/email-worker/`) uses Worker secrets for `AUTH_SECRET` and `RESEND_API_KEY`. Set via `wrangler secret put` in the `workers/email-worker/` directory.
 
 Local development uses `.dev.vars` files — Cloudflare env vars are not available locally.
 
@@ -201,7 +199,7 @@ In addition to the OAuth variables, the following are required:
 | `AUTH_SECRET` | Both | Shared secret — must match between app and worker for request validation |
 | `RESEND_API_KEY` | Email worker | Resend API key for sending emails |
 
-`AUTH_SECRET` and `RESEND_API_KEY` for the email worker are managed via Cloudflare Secrets Store (see `workers/email-worker/wrangler.jsonc`). `EMAIL_FROM` is a plain var set in the same file.
+`AUTH_SECRET` and `RESEND_API_KEY` for the email worker are set via `wrangler secret put` in the `workers/email-worker/` directory. `EMAIL_FROM` is a plain var in `workers/email-worker/wrangler.jsonc`.
 
 For local development, add to the main app's `.dev.vars`:
 

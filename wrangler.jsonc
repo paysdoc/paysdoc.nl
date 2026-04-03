@@ -11,7 +11,7 @@
 	},
 	"d1_databases": [
 		{
-			"binding": "paysdoc_auth_db",
+			"binding": "DB",
 			"database_name": "paysdoc-auth-db",
 			"database_id": "138b4abc-dc32-4f08-98a7-87442977a5d3"
 		}

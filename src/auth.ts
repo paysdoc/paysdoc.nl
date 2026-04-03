@@ -9,13 +9,11 @@ import type { EmailConfig } from '@auth/core/providers/email';
 export const { handlers, auth, signIn, signOut } = NextAuth(async () => {
   const { env } = await getCloudflareContext({ async: true });
   const emailWorkerUrl = env.EMAIL_WORKER_URL;
-  const [authSecret, googleId, googleSecret, githubId, githubSecret] = await Promise.all([
-    env.AUTH_SECRET.get(),
-    env.AUTH_GOOGLE_ID.get(),
-    env.AUTH_GOOGLE_SECRET.get(),
-    env.AUTH_GITHUB_ID.get(),
-    env.AUTH_GITHUB_SECRET.get(),
-  ]);
+  const authSecret = env.AUTH_SECRET;
+  const googleId = env.AUTH_GOOGLE_ID;
+  const googleSecret = env.AUTH_GOOGLE_SECRET;
+  const githubId = env.AUTH_GITHUB_ID;
+  const githubSecret = env.AUTH_GITHUB_SECRET;
 
   const emailProvider: EmailConfig = {
     id: 'email',

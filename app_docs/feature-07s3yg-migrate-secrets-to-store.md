@@ -1,3 +1,5 @@
+> **Reversed:** This Secrets Store migration was reverted in issue #28. Secrets are now plain environment variables. See the README for current setup.
+
 # Migrate Secrets to Cloudflare Secrets Store
 
 **ADW ID:** 07s3yg-migrate-secrets-to-c
