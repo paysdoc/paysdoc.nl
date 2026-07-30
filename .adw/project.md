@@ -26,3 +26,6 @@ npm install {library}
 
 ## Script Execution
 npm run {script}
+
+## Agent Guardrails
+ADW copied a starter deny-only guardrail file (`.claude/settings.json`) into the repo during this initialization, since none existed. It denies recursive-force `rm`, force-push, and `.env` secret reads. This file is the repo owner's to edit or delete freely. Its `Read(!**/.env.sample)` / `Read(!**/.env.example)` negation carve-outs rely on UNDOCUMENTED Claude Code CLI precedence behavior; the framework verifies this with `scripts/guardrails-probe.ts` (issue #762) — re-run the probe after each Claude Code CLI upgrade to confirm the carve-outs still hold.
