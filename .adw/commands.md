@@ -17,7 +17,10 @@ N/A
 npm run build
 
 ## Start Dev Server
-npm run dev
+npm run dev -- --port {PORT}
+
+## Health Check Path
+/
 
 ## Prepare App
 npm install && npm run dev -- --port {PORT}
