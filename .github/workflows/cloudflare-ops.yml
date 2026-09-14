@@ -1,0 +1,98 @@
+name: Cloudflare ops
+
+# Run wrangler against the live Cloudflare account using the repo's
+# CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID secrets (local wrangler is not logged in).
+# Usage: gh workflow run cloudflare-ops.yml -f operation=<op> [-f argument=...]
+
+on:
+  workflow_dispatch:
+    inputs:
+      operation:
+        description: Operation to run
+        type: choice
+        required: true
+        options:
+          - whoami
+          - kv-list
+          - kv-create
+          - kv-keys
+          - kv-get
+          - secret-list
+          - worker-secret-list
+          - d1-schema
+          - d1-query
+          - deployments
+          - rollback
+      argument:
+        description: Optional argument (kv-get key, d1-query SQL)
+        type: string
+        required: false
+        default: ""
+
+jobs:
+  ops:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run operation
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          OPERATION: ${{ inputs.operation }}
+          ARGUMENT: ${{ inputs.argument }}
+        run: |
+          set -euo pipefail
+          echo "Operation: $OPERATION"
+          case "$OPERATION" in
+            whoami)
+              npx wrangler whoami
+              ;;
+            kv-list)
+              npx wrangler kv namespace list
+              ;;
+            kv-create)
+              npx wrangler kv namespace create INTEREST_KV
+              ;;
+            kv-keys)
+              npx wrangler kv key list --binding INTEREST_KV --remote
+              ;;
+            kv-get)
+              [ -n "$ARGUMENT" ] || { echo "kv-get requires 'argument' (the key)" >&2; exit 1; }
+              npx wrangler kv key get --binding INTEREST_KV --remote "$ARGUMENT"
+              ;;
+            secret-list)
+              npx wrangler secret list
+              ;;
+            worker-secret-list)
+              cd workers/email-worker && npx wrangler secret list
+              ;;
+            d1-schema)
+              npx wrangler d1 execute paysdoc-auth-db --remote --command "SELECT name, sql FROM sqlite_master WHERE type IN ('table','index') ORDER BY name"
+              ;;
+            d1-query)
+              [ -n "$ARGUMENT" ] || { echo "d1-query requires 'argument' (the SQL)" >&2; exit 1; }
+              npx wrangler d1 execute paysdoc-auth-db --remote --command "$ARGUMENT"
+              ;;
+            deployments)
+              npx wrangler deployments list
+              ;;
+            rollback)
+              npx wrangler rollback --yes
+              ;;
+            *)
+              echo "Unknown operation: $OPERATION" >&2
+              exit 1
+              ;;
+          esac

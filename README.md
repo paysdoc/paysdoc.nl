@@ -31,7 +31,11 @@ Open [http://localhost:3000](http://localhost:3000) to see the result.
 ```
 src/
   app/                  # Next.js App Router pages
+    about/page.tsx
     admin/page.tsx
+    api/
+      auth/[...nextauth]/route.ts
+      interest/route.ts     # Interest capture API endpoint (POST /api/interest)
     auth/verify-request/page.tsx
     contact/page.tsx
     dashboard/
@@ -39,11 +43,9 @@ src/
       AddRepoForm.tsx
       RepoList.tsx
       actions.ts        # Server actions for repo CRUD
+    how-it-works/page.tsx
     login/page.tsx
     services/page.tsx
-    api/
-      auth/[...nextauth]/route.ts
-      interest/route.ts     # Interest capture API endpoint (POST /api/interest)
     favicon.ico
     globals.css
     layout.tsx
@@ -70,6 +72,12 @@ src/
 workers/
   email-worker/         # Cloudflare Worker — sends magic link emails via Resend
 migrations/             # Cloudflare D1 SQL migrations
+scripts/
+  smoke.mjs             # Playwright smoke test (npm run smoke)
+  dev/                  # Local-only D1 fixtures for the preview (never applied to production)
+.github/workflows/
+  deploy.yml            # Build + deploy to Cloudflare Workers on push to main
+  cloudflare-ops.yml    # Manual wrangler operations against the live account
 features/               # Cucumber BDD feature files
 e2e-tests/              # E2E test plans
 specs/                  # ADW-generated implementation specs
@@ -79,7 +87,7 @@ public/
   images/               # Brand imagery (logo, headshot)
   # Static SVGs and favicon
 cloudflare-env.d.ts     # Cloudflare environment type bindings
-wrangler.jsonc          # Cloudflare Workers/Pages deployment config
+wrangler.jsonc          # Cloudflare Workers deployment config (Worker + static assets)
 open-next.config.ts     # OpenNext Cloudflare adapter config
 vitest.config.ts        # Vitest unit test configuration
 cucumber.js             # Cucumber BDD configuration
@@ -140,48 +148,53 @@ Alternatively, use a `.dev.vars` file (Cloudflare convention) with the same vari
 
 ## Deployment
 
-The site is deployed to [Cloudflare Pages](https://pages.cloudflare.com/) via GitHub Actions using the [`@opennextjs/cloudflare`](https://opennext.js.org/cloudflare) adapter for server-side rendering. On every push to `main`, the workflow:
+The site is deployed to [Cloudflare Workers](https://developers.cloudflare.com/workers/) with static assets via GitHub Actions (`.github/workflows/deploy.yml`). The [`@opennextjs/cloudflare`](https://opennext.js.org/cloudflare) adapter builds the Next.js app into a Worker (`.open-next/worker.js`) plus an assets directory (`.open-next/assets`); `wrangler.jsonc` points `main` at the Worker and binds the assets as `ASSETS`, so `wrangler deploy` ships both. On every push to `main` (or a manual `workflow_dispatch`), the workflow:
 
-1. Installs dependencies with Bun
-2. Builds the app with OpenNext (`bun run build` → `.open-next/`)
-3. Applies D1 migrations (`--remote`)
-4. Deploys `.open-next/assets` to Cloudflare Pages using Wrangler
+1. Installs dependencies with `npm ci` (Node 22)
+2. Runs `npm run lint` and `npm test`
+3. Builds the app with OpenNext (`npm run build` → `.open-next/`)
+4. Applies D1 migrations (`npx wrangler d1 migrations apply paysdoc-auth-db --remote`)
+5. Deploys the site Worker `paysdoc-nl` (`npx wrangler deploy`)
+6. Pushes the site Worker secrets with `wrangler secret bulk`
+7. Installs and deploys the email Worker (`workers/email-worker`)
+8. Pushes the email Worker secrets with `wrangler secret bulk`
+9. Prints the deployed `workers.dev` URL in the log and the job summary
 
-The following GitHub Actions secrets must be configured in the repository:
+The following GitHub Actions secrets must be configured in the repository. The workflow pushes the application secrets to the Workers on every deploy (values are only ever passed via `env` and piped on stdin, never echoed), so Cloudflare Secrets Store is no longer used and secrets never need to be set in the Cloudflare dashboard.
 
-| Secret | Description |
-|--------|-------------|
-| `CLOUDFLARE_API_TOKEN` | Cloudflare API token with Pages deployment permissions |
-| `CLOUDFLARE_ACCOUNT_ID` | Cloudflare account ID |
+| Secret | Used by | Description |
+|--------|---------|-------------|
+| `CLOUDFLARE_API_TOKEN` | Workflow | Cloudflare API token with Workers, D1 and KV permissions |
+| `CLOUDFLARE_ACCOUNT_ID` | Workflow | Cloudflare account ID |
+| `AUTH_SECRET` | Site + email Worker | Session signing secret; shared so the email Worker can validate requests |
+| `AUTH_GOOGLE_ID` | Site | Google OAuth client ID |
+| `AUTH_GOOGLE_SECRET` | Site | Google OAuth client secret |
+| `AUTH_GITHUB_ID` | Site | GitHub OAuth app client ID |
+| `AUTH_GITHUB_SECRET` | Site | GitHub OAuth app client secret |
+| `COST_API_TOKEN` | Site | Token for the cost API at `COST_API_URL` (declared as a binding; not yet read by app code) |
+| `RESEND_API_KEY` | Email Worker | Resend API key for sending magic link emails |
 
-All other app secrets (`AUTH_SECRET`, `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET`, `AUTH_GITHUB_ID`, `AUTH_GITHUB_SECRET`, `EMAIL_WORKER_URL`, `EMAIL_FROM`, `RESEND_API_KEY`) are managed via Cloudflare Secrets Store — see **Secrets Store Setup** below.
+Non-secret configuration (`COST_API_URL`, `EMAIL_WORKER_URL`, `EMAIL_FROM`) lives in the `vars` block of the respective `wrangler.jsonc`. The `INTEREST_KV` namespace id in `wrangler.jsonc` must be created once (see `kv-create` below) before the first deploy.
 
-## Secrets Store Setup
+### Local preview on the Cloudflare runtime
 
-App secrets are stored in Cloudflare Secrets Store and injected at runtime via `secrets_store_secrets` bindings. This must be set up once before the first production deployment.
+```bash
+npm run build          # OpenNext build → .open-next/
+npm run preview        # serves the built Worker in workerd (pass -- --port 8788 to pick a port)
+BASE_URL=http://localhost:8788 npm run smoke   # Playwright smoke test against the preview
+```
 
-1. Create the store:
+The preview reads `.dev.vars` for secrets and uses the local D1/KV state in `.wrangler/`. The protected pages need the tables from `scripts/dev/local-dashboard-tables.sql` (see `scripts/dev/README.md`).
 
-   ```bash
-   npx wrangler secrets-store store create paysdoc-secrets --remote
-   ```
+### Cloudflare ops workflow
 
-2. Copy the returned store ID and replace `<STORE_ID>` in both `wrangler.jsonc` files (root and `workers/email-worker/`).
+`.github/workflows/cloudflare-ops.yml` runs `wrangler` against the live account using the repository's `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID` secrets, so no local `wrangler login` is needed. Trigger it with:
 
-3. Create each secret in the store:
+```bash
+gh workflow run cloudflare-ops.yml -f operation=<op> [-f argument=...]
+```
 
-   ```bash
-   npx wrangler secrets-store secret create AUTH_SECRET --store-id <STORE_ID> --remote
-   npx wrangler secrets-store secret create AUTH_GOOGLE_ID --store-id <STORE_ID> --remote
-   npx wrangler secrets-store secret create AUTH_GOOGLE_SECRET --store-id <STORE_ID> --remote
-   npx wrangler secrets-store secret create AUTH_GITHUB_ID --store-id <STORE_ID> --remote
-   npx wrangler secrets-store secret create AUTH_GITHUB_SECRET --store-id <STORE_ID> --remote
-   npx wrangler secrets-store secret create EMAIL_WORKER_URL --store-id <STORE_ID> --remote
-   npx wrangler secrets-store secret create RESEND_API_KEY --store-id <STORE_ID> --remote
-   npx wrangler secrets-store secret create EMAIL_FROM --store-id <STORE_ID> --remote
-   ```
-
-4. Local development continues to use `.dev.vars` files — Secrets Store does not work with `wrangler dev` locally.
+Operations: `whoami`, `kv-list`, `kv-create` (creates `INTEREST_KV` and prints its id), `kv-keys`, `kv-get` (argument: key), `secret-list`, `worker-secret-list`, `d1-schema`, `d1-query` (argument: SQL), `deployments`, `rollback`. Read the output with `gh run view --log` (or `gh run watch`) on the run that was started.
 
 ## Magic Link Email Setup
 
@@ -210,7 +223,7 @@ In addition to the OAuth variables, the following are required:
 | `AUTH_SECRET` | Both | Shared secret — must match between app and worker for request validation |
 | `RESEND_API_KEY` | Email worker | Resend API key for sending emails |
 
-`EMAIL_FROM`, `AUTH_SECRET`, and `RESEND_API_KEY` are managed via Cloudflare Secrets Store (see **Secrets Store Setup** above). They no longer need to be set in the Cloudflare dashboard.
+`EMAIL_FROM` is set in `workers/email-worker/wrangler.jsonc`; `AUTH_SECRET` and `RESEND_API_KEY` are pushed to the email Worker by the deploy workflow (see **Deployment** above).
 
 For local development, add to the main app's `.dev.vars`:
 
@@ -262,6 +275,8 @@ Add your domain in the [Resend dashboard](https://resend.com/domains) and config
 |---------|-------------|
 | `npm run dev` | Start development server |
 | `npm run build` | Production build (OpenNext for Cloudflare) |
+| `npm run preview` | Serve the built Worker locally in the Cloudflare `workerd` runtime |
+| `npm run smoke` | Playwright smoke test against `BASE_URL` (default `http://localhost:8788`) |
 | `npm run start` | Start production server |
 | `npm run lint` | Run ESLint |
 | `npm run test` | Run unit tests (Vitest) |

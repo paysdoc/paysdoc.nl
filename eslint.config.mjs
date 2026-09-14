@@ -15,6 +15,8 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
     "agents/**",
+    // Maestro playbooks / scratch output (untracked, contains generated bundles).
+    ".maestro/**",
   ]),
 ]);
 
