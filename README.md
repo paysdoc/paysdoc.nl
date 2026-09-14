@@ -58,6 +58,7 @@ src/
     repo-url.ts         # GitHub/GitLab URL parsing
     roles.ts            # Role resolution helpers
     __tests__/          # Unit tests (Vitest)
+      interest-route.test.ts  # POST /api/interest with a mocked Cloudflare context
       migrations.test.ts  # Applies migrations/ to an in-memory SQLite DB
       roles.test.ts       # Role resolution
   types/                # TypeScript type augmentations
