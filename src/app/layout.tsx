@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   },
   description:
     'AI-powered software engineering with nearly 30 years of full-stack expertise. From idea to production-ready software for non-technical founders.',
-  metadataBase: new URL('https://paysdoc.nl'),
+  metadataBase: new URL('https://www.paysdoc.nl'),
   // og:title and og:description are filled in per page from the resolved
   // title/description (Next.js inherits them when openGraph omits them).
   openGraph: {

@@ -6,6 +6,13 @@
 		"nodejs_compat",
 		"global_fetch_strictly_public"
 	],
+	// Zone routes make the Worker answer for the real site; DNS already points
+	// both hosts at Cloudflare, so no DNS change is needed. The apex is
+	// redirected to www by next.config.ts.
+	"routes": [
+		{ "pattern": "www.paysdoc.nl/*", "zone_name": "paysdoc.nl" },
+		{ "pattern": "paysdoc.nl/*", "zone_name": "paysdoc.nl" }
+	],
 	"assets": {
 		"directory": ".open-next/assets",
 		"binding": "ASSETS"
