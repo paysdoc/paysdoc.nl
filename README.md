@@ -184,7 +184,7 @@ npm run preview        # serves the built Worker in workerd (pass -- --port 8788
 BASE_URL=http://localhost:8788 npm run smoke   # Playwright smoke test against the preview
 ```
 
-The preview reads `.dev.vars` for secrets and uses the local D1/KV state in `.wrangler/`. The protected pages need the tables from `scripts/dev/local-dashboard-tables.sql` (see `scripts/dev/README.md`).
+The preview reads `.dev.vars` for secrets and uses the local D1/KV state in `.wrangler/`. The protected pages (`/dashboard`, `/admin`) use the `projects`, `client_repos`, `cost_records` and `token_usage` tables created by `migrations/0002_client_repos.sql` and `migrations/0003_cost_tables.sql`, so run the local migrations first.
 
 ### Cloudflare ops workflow
 
