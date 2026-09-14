@@ -19,7 +19,7 @@ Everything about running paysdoc.nl on Cloudflare Workers lives in this folder. 
 
 | Document | Type | What it is for |
 | --- | --- | --- |
-| [[Deployment-Runbook]] (`deployment-runbook.md`) | reference | Architecture, secrets model, everyday operations, first-deploy steps, troubleshooting |
+| [[Deployment-Runbook]] (`deployment-runbook.md`) | reference | Architecture, secrets model, everyday operations, first-deploy steps, troubleshooting, post-migration cleanup (manual) |
 | [[2026-workers-migration]] (`2026-workers-migration.md`) | report | Deploy record of the Pages → Workers migration: what changed, KV id, Worker URL, D1 schema decision. *Pending: written after the first successful deploy ([#33](https://github.com/paysdoc/paysdoc.nl/issues/33))* |
 | [[Production-Smoke-Test]] (`production-smoke-test.md`) | report | Results of the automated production smoke run on `www.paysdoc.nl` and how to repeat it. *Pending: [#36](https://github.com/paysdoc/paysdoc.nl/issues/36)* |
 | [[Manual-Verification-Checklist]] (`manual-verification-checklist.md`) | reference | Human checklist: finish OAuth logins, click the magic link, walk `/dashboard` and `/admin`. *Pending: [#36](https://github.com/paysdoc/paysdoc.nl/issues/36)* |

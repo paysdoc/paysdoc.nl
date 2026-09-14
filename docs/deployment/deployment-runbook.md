@@ -187,7 +187,67 @@ A rollback restores the previous Worker *code* only. Secrets and D1 migrations a
 Workers Logs (dashboard → Workers & Pages → `paysdoc-nl` or `email` → Logs) are enabled through
 `observability.enabled: true`; for a first look at a runtime error they are faster than any workflow.
 
-## 6. Related documents
+## 6. Post-migration cleanup (manual)
+
+Two Cloudflare resources become dead weight once the Worker serves `www.paysdoc.nl`: the old Pages project
+`paysdoc-nl` and the Secrets Store that issue #28 emptied. Deleting them is destructive and is deliberately **not**
+automated: `cloudflare-ops.yml` has no delete operation and the CI token has neither Pages nor Secrets Store
+write scopes. The owner runs these by hand, tracked in [#37](https://github.com/paysdoc/paysdoc.nl/issues/37).
+
+**Before starting.** All of the following must be true, otherwise step 2 takes the site down:
+
+- [#34](https://github.com/paysdoc/paysdoc.nl/issues/34) is merged and `curl -sI https://www.paysdoc.nl/` returns
+  200 from the Worker (`operation=deployments` lists `paysdoc-nl`; the page is the real site, not a 404).
+- A locally logged-in `wrangler`: `npx wrangler login` (opens a browser; the account needs Pages and Secrets Store
+  edit permissions). Nothing in this section can run through GitHub Actions.
+- `npx wrangler pages project list` still shows `paysdoc-nl` and `npx wrangler secrets-store store list --remote`
+  still shows `1b912ba249fb4664a0bf42e8b01e4a1d`; if either is already gone, skip that step.
+
+Run in this order:
+
+1. **Detach the custom domain from the Pages project (dashboard).** Workers & Pages → `paysdoc-nl` (the Pages
+   entry, not the Worker) → *Custom domains* → remove `www.paysdoc.nl`. This only removes the Pages-side claim on
+   the hostname; the zone route on the Worker keeps serving, and the DNS record is untouched. Re-check
+   `curl -sI https://www.paysdoc.nl/` afterwards.
+
+2. **Delete the Pages project.**
+
+   ```bash
+   npx wrangler pages project delete paysdoc-nl
+   ```
+
+   Removes the old Pages project, every deployment it holds and its `paysdoc-nl.pages.dev` hostname (which then
+   stops resolving). The command asks for confirmation; add `--yes` only when scripting. Safe only after step 1
+   and after the Worker is confirmed to serve `www.paysdoc.nl`.
+
+3. **Delete the empty Secrets Store.**
+
+   ```bash
+   npx wrangler secrets-store store delete 1b912ba249fb4664a0bf42e8b01e4a1d --remote
+   ```
+
+   Removes the Secrets Store that #28 emptied. Neither Worker declares a `secrets_store_secrets` binding any more
+   (`grep -rn secrets_store wrangler.jsonc workers/`), so nothing references it. `--remote` is required: without it
+   wrangler 4.x targets a local development store and the account resource stays.
+
+4. **Remove the secrets that were set in the Pages dashboard.** They lived on the Pages project (Settings →
+   Variables and Secrets) and were only ever read by the Pages deployment; the Worker gets every secret from
+   `wrangler secret bulk` in `deploy.yml` (section 2). Step 2 deletes them together with the project; if the
+   project is kept for a while, delete them there by hand so no stale copy of `AUTH_SECRET`, the OAuth secrets or
+   `RESEND_API_KEY` remains in a second place. The GitHub Actions secrets stay.
+
+5. **Optional: re-point `www` to a Workers custom domain.** The zone record for `www` is a proxied CNAME to
+   `paysdoc-nl.pages.dev` (public DNS only shows Cloudflare's flattened A records). The zone route intercepts
+   requests before the record's target matters, so it keeps working after step 2 and **no change is required**.
+   To tidy up anyway: dashboard → Workers & Pages → `paysdoc-nl` (Worker) → Settings → Domains & Routes →
+   *Add custom domain* `www.paysdoc.nl`; Cloudflare replaces the CNAME with a Worker-managed record. Then the
+   `routes` entry for `www.paysdoc.nl/*` in `wrangler.jsonc` is redundant and can be dropped in a follow-up commit
+   (keep the apex route, it feeds the 308 redirect).
+
+Verify when done: `curl -sI https://www.paysdoc.nl/` 200, `curl -sI https://paysdoc.nl/` 308 to `www`,
+`curl -sI https://paysdoc-nl.pages.dev/` no longer resolves, then close #37.
+
+## 7. Related documents
 
 - [[2026-workers-migration]] — deploy record of the migration (KV id, first Worker URL, D1 decision).
 - [[Production-Smoke-Test]] — results table of the automated production run and the command to repeat it.
