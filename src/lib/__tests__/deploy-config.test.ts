@@ -20,15 +20,25 @@ describe('custom domain deploy config', () => {
     ]);
   });
 
-  it('permanently redirects every apex path to www, preserving the path', async () => {
+  it('permanently redirects the apex root and every apex path to www, preserving the path', async () => {
     const redirects = await nextConfig.redirects!();
-    expect(redirects).toHaveLength(1);
-    expect(redirects[0]).toEqual({
-      source: '/:path*',
-      has: [{ type: 'host', value: 'paysdoc.nl' }],
-      destination: 'https://www.paysdoc.nl/:path*',
-      permanent: true,
-    });
+    const apexHost = { type: 'host', value: '^paysdoc\\.nl$' };
+    expect(redirects).toEqual([
+      { source: '/', has: [apexHost], destination: 'https://www.paysdoc.nl/', permanent: true },
+      { source: '/:path+', has: [apexHost], destination: 'https://www.paysdoc.nl/:path+', permanent: true },
+    ]);
+  });
+
+  it('anchors the apex host match so www does not redirect to itself under OpenNext', async () => {
+    // OpenNext tests `has.value` with an unanchored `new RegExp(value)`; Next.js
+    // wraps it as `^value$`. The value must match only the bare apex under both.
+    const [{ has }] = await nextConfig.redirects!();
+    const value = has![0].value!;
+    for (const re of [new RegExp(value), new RegExp(`^${value}$`)]) {
+      expect(re.test('paysdoc.nl')).toBe(true);
+      expect(re.test('www.paysdoc.nl')).toBe(false);
+      expect(re.test('paysdoc-nl.paysdoc.workers.dev')).toBe(false);
+    }
   });
 
   it('uses www.paysdoc.nl as metadataBase so og:url resolves to the canonical host', () => {
