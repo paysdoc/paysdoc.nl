@@ -191,7 +191,8 @@ BASE_URL=https://www.paysdoc.nl npm run check-links   # every internal link on t
 `--production` additionally asserts that every public page has an `og:url` on `https://www.paysdoc.nl`, that its
 `link[rel=icon]` fetches with 200, and that no request made while rendering any page goes over plain `http:` or to
 the retired `*.pages.dev` project. The JSON report and screenshots land in `.maestro/playbooks/Initiation/Working`
-(override with `SMOKE_OUT_DIR`); the production evidence kept in the repo is under `docs/deployment/evidence/<date>/`.
+(override with `SMOKE_OUT_DIR`); the production evidence kept in the repo is under `docs/deployment/evidence/<date>/`,
+summarised in `docs/deployment/production-smoke-test.md`.
 
 The preview reads `.dev.vars` for secrets and uses the local D1/KV state in `.wrangler/`. The protected pages (`/dashboard`, `/admin`) use the `projects`, `client_repos`, `cost_records` and `token_usage` tables created by `migrations/0002_client_repos.sql` and `migrations/0003_cost_tables.sql`, so run the local migrations first.
 
