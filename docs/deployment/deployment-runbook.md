@@ -21,13 +21,13 @@ its output lands. Local `wrangler` is **not** logged in on the development machi
 goes through GitHub Actions using the repository's Cloudflare secrets.
 
 > [!NOTE]
-> **Status on 2026-09-14.** The migration code is complete but the first Workers deploy has not happened yet:
-> the `INTEREST_KV` namespace cannot be created until the Cloudflare API token gets the *Workers KV Storage · Edit*
-> scope ([#31](https://github.com/paysdoc/paysdoc.nl/issues/31) → [#32](https://github.com/paysdoc/paysdoc.nl/issues/32)
-> → [#33](https://github.com/paysdoc/paysdoc.nl/issues/33)). The custom-domain routes live on branch
-> `feat/custom-domain-routes` ([#34](https://github.com/paysdoc/paysdoc.nl/issues/34)). Until #33 is done both
-> `https://www.paysdoc.nl/` and the apex return 404. Everything below describes the target state that the open
-> issues complete; the "First deploy" section covers the one-off steps.
+> **Status on 2026-09-16.** The site is live on the Worker: `https://www.paysdoc.nl/` answers 200, the apex and
+> plain-http requests 308 to it, and the automated production smoke test passes 35/35
+> ([[Production-Smoke-Test]]). The one-off steps that got it there are recorded in section 4 for reference; the
+> only items still with the owner are the OAuth redirect-URI confirmation
+> ([#35](https://github.com/paysdoc/paysdoc.nl/issues/35)), the human part of
+> [[Manual-Verification-Checklist]] and the cleanup in section 6
+> ([#37](https://github.com/paysdoc/paysdoc.nl/issues/37)).
 
 ## 1. Architecture
 
@@ -37,7 +37,9 @@ flowchart LR
     apex["paysdoc.nl/*"]
     www["www.paysdoc.nl/*"]
   end
+  http["http://www.paysdoc.nl/*"]
   apex -- "308 redirect (next.config.ts)" --> www
+  http -- "308 redirect (next.config.ts)" --> www
   www --> W["Worker paysdoc-nl<br/>.open-next/worker.js"]
   W --> A["ASSETS<br/>.open-next/assets"]
   W --> DB["D1 paysdoc-auth-db<br/>binding DB"]
@@ -53,12 +55,14 @@ flowchart LR
 | Static assets | `.open-next/assets`, binding `ASSETS` | `wrangler.jsonc` (`assets`) | Shipped by the same `wrangler deploy`; there is no separate Pages upload |
 | Self reference | service binding `WORKER_SELF_REFERENCE` → `paysdoc-nl` | `wrangler.jsonc` (`services`) | Required by OpenNext for internal fetches |
 | Database | D1 `paysdoc-auth-db`, id `138b4abc-dc32-4f08-98a7-87442977a5d3`, binding `DB` | `wrangler.jsonc` (`d1_databases`) | Auth.js tables (`migrations/0001`), dashboard tables (`0002`), cost tables (`0003`). Code always reads `env.DB` |
-| Interest form store | KV binding `INTEREST_KV` | `wrangler.jsonc` (`kv_namespaces`) | `POST /api/interest` writes one key per email. Id is `<placeholder>` until #32 |
+| Interest form store | KV `INTEREST_KV`, id `eefd36f984b64b4eb95f368a86867aaa`, binding `INTEREST_KV` | `wrangler.jsonc` (`kv_namespaces`) | `POST /api/interest` writes one key per email (`{email, timestamp}`); list with `operation=kv-keys` |
 | Email Worker | `email`, entry `workers/email-worker/src/index.ts` | `workers/email-worker/wrangler.jsonc` | Sends Auth.js magic-link mail through Resend; `EMAIL_FROM=noreply@paysdoc.nl` as a var |
 | Site → email link | var `EMAIL_WORKER_URL=https://email.paysdoc.workers.dev` | `wrangler.jsonc` (`vars`) | `src/auth.ts` POSTs `{to, url}` with `Authorization: Bearer <AUTH_SECRET>` |
 | Cost API | var `COST_API_URL=https://costs.paysdoc.nl` + secret `COST_API_TOKEN` | `wrangler.jsonc` (`vars`) | Declared as bindings; the app does not call it yet |
-| Routes | `www.paysdoc.nl/*` and `paysdoc.nl/*`, zone `paysdoc.nl` | `wrangler.jsonc` (`routes`, on `feat/custom-domain-routes`) | A zone route intercepts requests before the old Pages project, so DNS is untouched |
-| Apex redirect | host `paysdoc.nl` → `https://www.paysdoc.nl/:path*`, permanent | `next.config.ts` `redirects()` (same branch) | `www` is canonical; `metadataBase` in `src/app/layout.tsx` matches |
+| Routes | `www.paysdoc.nl/*` and `paysdoc.nl/*`, zone `paysdoc.nl` | `wrangler.jsonc` (`routes`) | Created by `wrangler deploy`; a zone route intercepts requests before the old Pages project, so DNS is untouched. With routes set and `workers_dev` unset, `paysdoc-nl.paysdoc.workers.dev` is disabled (404) |
+| Apex redirect | host `paysdoc.nl` → `https://www.paysdoc.nl/…`, permanent (308) | `next.config.ts` `redirects()` | `www` is canonical; `metadataBase` in `src/app/layout.tsx` matches. Host matched with an anchored regex `^paysdoc\.nl$` and split into `/` + `/:path+` rules because of OpenNext quirks (see the file comment) |
+| HTTP → HTTPS | `x-forwarded-proto: http` → `https://www.paysdoc.nl/…`, permanent (308) | `next.config.ts` `redirects()` | The zone's *Always Use HTTPS* is off, so the Worker upgrades plain-http itself |
+| Security headers | `Strict-Transport-Security: max-age=31536000`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin` on every rendered page | `next.config.ts` `headers()` | Not on static assets (served by `ASSETS` before the Worker runs) nor on middleware/redirect responses. No `includeSubDomains`/`preload` on purpose |
 | Runtime flags | `nodejs_compat`, `global_fetch_strictly_public`, `compatibility_date` 2025-04-01 | `wrangler.jsonc` | `observability.enabled` gives Workers Logs in the dashboard |
 | Type bindings | `CloudflareEnv` | `cloudflare-env.d.ts` | Keep in sync with `wrangler.jsonc` when adding a binding |
 
@@ -125,7 +129,9 @@ the `vars` blocks of the two `wrangler.jsonc` files.
 | D1 query | `... -f operation=d1-query -f argument="SELECT name FROM d1_migrations"` | log |
 | Rollback | `... -f operation=rollback` (runs `wrangler rollback --yes`, previous version of `paysdoc-nl`) | then `operation=deployments` to confirm |
 | Local preview | `npm run build && npm run preview` (workerd on `http://localhost:8788`; add `-- --port 8788` to pin it) | terminal |
-| Smoke test | `BASE_URL=https://www.paysdoc.nl npm run smoke` (or `BASE_URL=http://localhost:8788`) | JSON report + screenshots in `.maestro/playbooks/Initiation/Working/` (override with `SMOKE_OUT_DIR`) |
+| Smoke test | `BASE_URL=https://www.paysdoc.nl npm run smoke -- --production` (against the preview: `BASE_URL=http://localhost:8788 npm run smoke`, without the flag) | JSON report + screenshots in `.maestro/playbooks/Initiation/Working/` (override with `SMOKE_OUT_DIR=<dir>`; the default folder must exist). `--production` adds the `og:url`, icon and https-only/no-`pages.dev` request checks. Note: every run writes two `smoke+<timestamp>…@paysdoc.nl` keys into the production KV |
+| Broken-link crawl | `BASE_URL=https://www.paysdoc.nl npm run check-links` | JSON report in the same folder; internal links must answer 200 directly |
+| Token sanity | `... -f operation=whoami` | log; `wrangler whoami` does not list scopes, only the account |
 | Lint / unit tests / build | `npm run lint`, `npm test`, `npm run build` | must all pass before `deploy.yml` reaches `wrangler deploy` |
 
 What one `deploy.yml` run does, in order: `npm ci` (Node 22) → `npm run lint` → `npm test` → `npm run build`
@@ -141,27 +147,38 @@ The ops workflow must be triggered with the branch you want it to run from when 
 A rollback restores the previous Worker *code* only. Secrets and D1 migrations are not rolled back; migrations are
 `CREATE ... IF NOT EXISTS`, so re-deploying forward is always safe.
 
-## 4. First deploy (one-off, until #33 is closed)
+## 4. First deploy (done 2026-09-16, kept as the record)
 
-1. **Token scopes** — [#31](https://github.com/paysdoc/paysdoc.nl/issues/31). In
-   https://dash.cloudflare.com/profile/api-tokens edit the token stored as `CLOUDFLARE_API_TOKEN` and add
-   *Account · Workers KV Storage · Edit* and *Zone · Workers Routes · Edit* (zone `paysdoc.nl`). Editing keeps the
-   token value. Verify: `gh workflow run cloudflare-ops.yml --ref deploy/workers-migration -f operation=kv-list`
-   must no longer print `Authentication error [code: 10000]`.
-2. **KV namespace** — [#32](https://github.com/paysdoc/paysdoc.nl/issues/32).
-   `gh workflow run cloudflare-ops.yml --ref deploy/workers-migration -f operation=kv-create`, copy the printed id
-   into `wrangler.jsonc` → `kv_namespaces[0].id`, commit on `deploy/workers-migration`.
-3. **Merge and deploy** — [#33](https://github.com/paysdoc/paysdoc.nl/issues/33). Open the PR from
-   `deploy/workers-migration` with `Closes #28`, merge, `gh run watch` the deploy. The first run also applies
-   migrations `0002` and `0003` to production; confirm with
-   `operation=d1-query -f argument="SELECT name FROM d1_migrations"` (three rows).
-4. **Custom domain** — [#34](https://github.com/paysdoc/paysdoc.nl/issues/34). Rebase `feat/custom-domain-routes`
-   onto `main`, merge, watch the deploy, then `curl -sI https://paysdoc.nl/` must be a 308 to `www` and
-   `curl -sI https://www.paysdoc.nl/` a 200 with `cf-ray`.
-5. **OAuth redirect URIs** — [#35](https://github.com/paysdoc/paysdoc.nl/issues/35). Google and GitHub apps must
-   list `https://www.paysdoc.nl/api/auth/callback/google` and `https://www.paysdoc.nl/api/auth/callback/github`.
-6. **Verify** — [#36](https://github.com/paysdoc/paysdoc.nl/issues/36). `BASE_URL=https://www.paysdoc.nl npm run smoke`,
-   then walk [[Manual-Verification-Checklist]] and record [[Production-Smoke-Test]].
+These one-off steps were executed on 2026-09-16 and do not need repeating. They are kept because a fresh
+Cloudflare account or a new token would need the same sequence; details are in [[2026-workers-migration]].
+
+1. **Token scopes** — [#31](https://github.com/paysdoc/paysdoc.nl/issues/31). The token stored as
+   `CLOUDFLARE_API_TOKEN` needs *Account · Workers Scripts · Edit*, *Account · D1 · Edit*, *Account · Workers KV
+   Storage · Edit* and *Zone · Workers Routes · Edit* (zone `paysdoc.nl`). Done by replacing the token (secret
+   re-set 2026-09-16); verified by `operation=kv-list` no longer printing `Authentication error [code: 10000]`.
+   Editing an existing token in https://dash.cloudflare.com/profile/api-tokens keeps its value; a new token
+   needs `gh secret set CLOUDFLARE_API_TOKEN`.
+2. **KV namespace** — [#32](https://github.com/paysdoc/paysdoc.nl/issues/32). `operation=kv-create` printed
+   `eefd36f984b64b4eb95f368a86867aaa`, committed into `wrangler.jsonc` → `kv_namespaces[0].id` (`7cd246a`).
+3. **Merge and deploy** — [#33](https://github.com/paysdoc/paysdoc.nl/issues/33). PR
+   [#39](https://github.com/paysdoc/paysdoc.nl/pull/39) merged (`d12d7b0`); the first `deploy.yml` run applied
+   migrations `0002` and `0003` to production (`operation=d1-query -f argument="SELECT name FROM d1_migrations"`
+   shows three rows). The first run shipped every app secret as the literal `-` because they had been uploaded
+   with `gh secret set --body -`; re-uploaded on stdin and redeployed (run 35084020706).
+4. **Custom domain** — [#34](https://github.com/paysdoc/paysdoc.nl/issues/34). PR
+   [#40](https://github.com/paysdoc/paysdoc.nl/pull/40) added the zone routes; the first live check showed `www`
+   looping to `/:path*`, fixed in PR [#41](https://github.com/paysdoc/paysdoc.nl/pull/41) (anchored host regex,
+   separate `/` and `/:path+` rules). Plain-http upgrade came with PR
+   [#42](https://github.com/paysdoc/paysdoc.nl/pull/42), security headers with PR
+   [#44](https://github.com/paysdoc/paysdoc.nl/pull/44). Check: `curl -sI https://paysdoc.nl/` → 308 to `www`,
+   `curl -sI https://www.paysdoc.nl/` → 200 with `cf-ray` and `x-opennext: 1`.
+5. **OAuth redirect URIs** — [#35](https://github.com/paysdoc/paysdoc.nl/issues/35), **still with the owner**.
+   The live site sends `https://www.paysdoc.nl/api/auth/callback/google` and
+   `https://www.paysdoc.nl/api/auth/callback/github`; both must be registered in the provider consoles.
+6. **Verify** — [#36](https://github.com/paysdoc/paysdoc.nl/issues/36). Automated part done: `BASE_URL=https://www.paysdoc.nl npm run smoke -- --production`
+   35/35, link crawl 6/6, headers and TTFB recorded in [[Production-Smoke-Test]] with evidence under
+   `evidence/2026-09-16/`. The human part is [[Manual-Verification-Checklist]] (OAuth completion, magic-link
+   click, `/dashboard`, `/admin`) and is still open.
 
 ## 5. Troubleshooting
 
@@ -177,12 +194,17 @@ A rollback restores the previous Worker *code* only. Secrets and D1 migrations a
 | `Authentication error [code: 10000]` from `kv-list` / `kv-create` or from `wrangler deploy` | `CLOUDFLARE_API_TOKEN` lacks *Workers KV Storage* (or *Workers Routes* when `routes` are present) | Edit the token scopes (section 4, step 1). `wrangler whoami` does **not** list scopes; the failing call is the only test |
 | `Worker "paysdoc-nl" not found` from `secret-list` | Not an auth error: the Worker has never been deployed | Run the first deploy (#33) |
 | `gh workflow run` returns HTTP 404 | The workflow file is not on the default branch, or `--ref` points to a branch that lacks it | Land the workflow file on `main` first; pass `--ref <branch>` explicitly |
-| `deploy.yml` fails at `wrangler deploy` with a KV namespace error | `INTEREST_KV` id is still `<placeholder>` | Complete #32 and commit the real id |
+| `deploy.yml` fails at `wrangler deploy` with a KV namespace error | `INTEREST_KV` id in `wrangler.jsonc` does not match a namespace in the account (was `<placeholder>` before 2026-09-16) | `operation=kv-list` shows the namespaces; commit the real id (`eefd36f984b64b4eb95f368a86867aaa`) |
 | `POST /api/interest` returns 500 | `INTEREST_KV` binding missing or wrong id | `wrangler.jsonc` `kv_namespaces`; `operation=kv-keys` proves the binding resolves |
 | `/dashboard` or `/admin` return a silent 500 | `src/middleware.ts` exporting the lazy `NextAuth` promise instead of a `middleware` function | Keep the explicit `export async function middleware(...)` form |
 | `/dashboard` or `/admin` fail with `no such table: projects` / `cost_records` | Migrations `0002`/`0003` not applied | `deploy.yml` applies them before deploying; check `operation=d1-query -f argument="SELECT name FROM d1_migrations"` |
 | Smoke test fails only on branding/font checks | Assets not shipped (missing `assets` block) or a stale build | `npm run build` then redeploy; `curl -I https://www.paysdoc.nl/fonts/EuphemiaUCAS-Regular.ttf` should be 200 |
-| Deploy is green but `www.paysdoc.nl` still serves the old (empty) Pages project | Routes not attached (branch `feat/custom-domain-routes` not merged, or token lacks *Workers Routes · Edit*) | Merge #34; alternatively add the two routes by hand in the dashboard (Workers & Pages → `paysdoc-nl` → Settings → Domains & Routes) and remove the `routes` block |
+| Deploy is green but `www.paysdoc.nl` still serves the old (empty) Pages project | Routes not attached (`routes` block missing from `wrangler.jsonc`, or token lacks *Workers Routes · Edit*) | `wrangler deploy` output must list both routes; alternatively add them by hand in the dashboard (Workers & Pages → `paysdoc-nl` → Settings → Domains & Routes) and remove the `routes` block |
+| `www.paysdoc.nl/` redirects to `/:path*` (or any redirect loops) | OpenNext tests `has` host/header values as *unanchored* regexes and only compiles the destination when a param was captured | Keep the anchored `^paysdoc\.nl$` / `^http$` values and the separate `/` and `/:path+` rules in `next.config.ts`; `src/lib/__tests__/deploy-config.test.ts` pins them |
+| OAuth redirect carries `client_id=-` (or any secret is the literal `-`) | Secrets were uploaded with `gh secret set NAME --body -`, which stores a hyphen instead of reading stdin | Re-upload by piping the value on stdin (`printf %s "$VALUE" \| gh secret set NAME`), then `gh workflow run deploy.yml`. Compare lengths in the redirect URL, never values |
+| `paysdoc-nl.paysdoc.workers.dev` returns 404 while `www` works | Expected: wrangler disables the `workers.dev` subdomain once zone routes exist and `workers_dev` is unset; the deploy summary then shows *not found in wrangler output* | Nothing to fix. Add `"workers_dev": true` to `wrangler.jsonc` only if a Cloudflare-hosted preview URL is wanted |
+| `http://www.paysdoc.nl/` serves the page instead of redirecting | The plain-http redirect rule in `next.config.ts` was removed, or the zone's *Always Use HTTPS* is off and nothing else upgrades | Keep the `x-forwarded-proto` rules; optionally turn on *Always Use HTTPS* (dashboard → SSL/TLS → Edge Certificates) as belt and braces |
+| Security headers missing on a page | `headers()` in `next.config.ts` changed, or the response is a redirect/middleware response or a static asset (those never get them) | `curl -sI https://www.paysdoc.nl/` must show the three headers; for assets a `public/_headers` file would be needed |
 
 Workers Logs (dashboard → Workers & Pages → `paysdoc-nl` or `email` → Logs) are enabled through
 `observability.enabled: true`; for a first look at a runtime error they are faster than any workflow.
@@ -196,8 +218,9 @@ write scopes. The owner runs these by hand, tracked in [#37](https://github.com/
 
 **Before starting.** All of the following must be true, otherwise step 2 takes the site down:
 
-- [#34](https://github.com/paysdoc/paysdoc.nl/issues/34) is merged and `curl -sI https://www.paysdoc.nl/` returns
-  200 from the Worker (`operation=deployments` lists `paysdoc-nl`; the page is the real site, not a 404).
+- `curl -sI https://www.paysdoc.nl/` returns 200 from the Worker (`x-opennext: 1`; `operation=deployments` lists
+  `paysdoc-nl`). True since 2026-09-16 ([#34](https://github.com/paysdoc/paysdoc.nl/issues/34) closed); re-check
+  on the day.
 - A locally logged-in `wrangler`: `npx wrangler login` (opens a browser; the account needs Pages and Secrets Store
   edit permissions). Nothing in this section can run through GitHub Actions.
 - `npx wrangler pages project list` still shows `paysdoc-nl` and `npx wrangler secrets-store store list --remote`
@@ -252,4 +275,5 @@ Verify when done: `curl -sI https://www.paysdoc.nl/` 200, `curl -sI https://pays
 - [[2026-workers-migration]] — deploy record of the migration (KV id, first Worker URL, D1 decision).
 - [[Production-Smoke-Test]] — results table of the automated production run and the command to repeat it.
 - [[Manual-Verification-Checklist]] — the human steps (OAuth completion, magic-link click, dashboard/admin).
-- Working notes behind this runbook: `.maestro/playbooks/Working/deploy.md`, `hitl.md`, `wrapup.md` (not committed).
+- Working notes behind this runbook: `.maestro/playbooks/Working/deploy.md`, `hitl.md`, `production.md`, `wrapup.md`
+  (not committed).
