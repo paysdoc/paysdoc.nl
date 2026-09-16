@@ -22,6 +22,7 @@ from `main` commit `afbd424` (deploy run 35086663401, live `BUILD_ID` `qu7p3Bg1Q
 | `mobile-home.png` | Home page, 390×844 mobile viewport at 2× DPR, full page |
 | `interest-form-success.png` | `/contact` after submitting `smoke+2026-09-16T10-53-30-377Z@paysdoc.nl`, showing the success message |
 | `auth-login-page.png` | `/login` reached via the navbar link, with the Google and GitHub buttons |
+| `links-2026-09-16T11-07-52-468Z.json` | Broken-link crawl (`BASE_URL=https://www.paysdoc.nl npm run check-links`, 11:07Z, `main` `8694905`): 6/6 checks, 30 internal links all 200, LinkedIn / GitHub / mailto present |
 
 The submitted address was confirmed in the production `INTEREST_KV` namespace by the `Cloudflare ops` workflow
 (`kv-get` run [35087492253](https://github.com/paysdoc/paysdoc.nl/actions/runs/35087492253)):

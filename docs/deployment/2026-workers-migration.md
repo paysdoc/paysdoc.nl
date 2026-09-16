@@ -114,6 +114,10 @@ registered for `www.paysdoc.nl` and the magic link would point at the wrong host
 | OAuth start on the real domain: `GET /api/auth/csrf` then `POST /api/auth/signin/google` and `/github` | both 302 to the provider with `client_id` (lengths 72 / 20) and `redirect_uri` = `https://www.paysdoc.nl/api/auth/callback/google` / `.../callback/github` |
 | Magic link: `POST /api/auth/signin/email` for `paysdoc@gmail.com` | 302 → `/api/auth/verify-request` → `/auth/verify-request` (200, "Check your email"); no `/login?error=`, so the email Worker and Resend accepted it; one `verification_tokens` row for the address, 24 h expiry (`d1-query` run 35088003353); email Worker answers 401 to a wrong bearer token |
 | Protected routes unauthenticated: `/dashboard`, `/admin` (and sub-paths) | 307 → `/login` |
+| Broken links: `BASE_URL=https://www.paysdoc.nl npm run check-links` (Playwright crawl of the five public pages) | 6/6 checks; 30 internal `<a href>` targets all 200 directly, LinkedIn / GitHub / `mailto:info@paysdoc.nl` present (report `evidence/2026-09-16/links-2026-09-16T11-07-52-468Z.json`) |
+| Security headers on `https://www.paysdoc.nl/` | were all absent; PR [#44](https://github.com/paysdoc/paysdoc.nl/pull/44) adds `strict-transport-security: max-age=31536000`, `x-content-type-options: nosniff`, `referrer-policy: strict-origin-when-cross-origin` via `headers()` in `next.config.ts`; present on every rendered page and API route after deploy run 35088767574 |
+| Cost API: `curl https://costs.paysdoc.nl/` | 404 at the root (worker up, no root route); `COST_API_URL` is not read anywhere in `src/`, the admin page uses D1 directly |
+| TTFB: `curl -w "%{time_starttransfer}" https://www.paysdoc.nl/` ×3 | 0.935 / 0.648 / 0.118 s, median **0.65 s** (cold isolate vs warm; post-deploy samples 0.78 / 0.14 / 0.19 s) |
 
 Evidence (final JSON report plus the desktop/mobile home, contact-success and login screenshots) is committed under
 [`docs/deployment/evidence/2026-09-16/`](evidence/2026-09-16/). The `--production` rules live in
@@ -133,6 +137,11 @@ Observation, not a failure: `og:url` is `https://www.paysdoc.nl` on every page b
   `https://www.paysdoc.nl/api/auth/callback/google` and `https://www.paysdoc.nl/api/auth/callback/github`; Google
   Cloud Console and the GitHub OAuth app must list exactly those. Completing a login, and the magic-link email that the
   automated check sent to `paysdoc@gmail.com` on 2026-09-16, are manual-checklist items.
+- **Security headers** (done 2026-09-16, PR #44): only responses the Worker renders carry them. Static assets
+  (`/_next/static/*`, `/favicon.ico`, `public/`) are served by the Workers assets binding before the Worker runs, and
+  OpenNext returns middleware/config redirects before merging config headers. Optional follow-ups: a `public/_headers`
+  file for `nosniff` on assets, and the dashboard-only *Always Use HTTPS* + HSTS toggles at the edge. HSTS is sent
+  without `includeSubDomains`/`preload` on purpose.
 - **Real-domain verification**: OAuth callbacks, magic-link sign-in, security headers, TTFB and the manual
   checklist (Phase 03). The first Phase 03 pass (2026-09-16) confirmed `https://www.paysdoc.nl/` 200, apex 308 → www,
   `/api/auth/providers` JSON from the Worker, and that the served Turbopack chunk hashes match a local build of

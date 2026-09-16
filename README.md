@@ -74,6 +74,7 @@ workers/
 migrations/             # Cloudflare D1 SQL migrations
 scripts/
   smoke.mjs             # Playwright smoke test (npm run smoke; -- --production adds the real-domain checks)
+  check-links.mjs       # Playwright broken-link crawl of the public pages (npm run check-links)
   lib/production-rules.mjs  # Pure og:url / https-only / no-pages.dev rules used by --production (unit-tested)
   dev/                  # Local-only D1 fixtures for the preview (never applied to production)
 .github/workflows/
@@ -184,6 +185,7 @@ npm run build          # OpenNext build → .open-next/
 npm run preview        # serves the built Worker in workerd (pass -- --port 8788 to pick a port)
 BASE_URL=http://localhost:8788 npm run smoke   # Playwright smoke test against the preview
 BASE_URL=https://www.paysdoc.nl npm run smoke -- --production   # same, plus the production-only checks
+BASE_URL=https://www.paysdoc.nl npm run check-links   # every internal link on the public pages answers 200
 ```
 
 `--production` additionally asserts that every public page has an `og:url` on `https://www.paysdoc.nl`, that its
@@ -284,6 +286,7 @@ Add your domain in the [Resend dashboard](https://resend.com/domains) and config
 | `npm run build` | Production build (OpenNext for Cloudflare) |
 | `npm run preview` | Serve the built Worker locally in the Cloudflare `workerd` runtime |
 | `npm run smoke` | Playwright smoke test against `BASE_URL` (default `http://localhost:8788`); add `-- --production` for the real-domain checks |
+| `npm run check-links` | Playwright broken-link crawl of the five public pages against `BASE_URL`; internal links must answer 200 directly, LinkedIn / GitHub / mailto must be present |
 | `npm run start` | Start production server |
 | `npm run lint` | Run ESLint |
 | `npm run test` | Run unit tests (Vitest) |
