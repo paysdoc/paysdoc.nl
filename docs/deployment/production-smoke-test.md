@@ -114,9 +114,10 @@ Run at 11:04Z against commit `8694905` (deploy run 35088180814); headers re-chec
 ## Open items for the owner
 
 Copied from the Auto Run `hitl.md` on 2026-09-16. Every earlier item there (API token scopes, Worker not deployed,
-custom-domain routes) is resolved; only these remain, none of them block automation.
+custom-domain routes) is resolved. **Items 1–3 were completed by the owner on 2026-09-16** (see *Manual verification*
+below); items 4 and 5 remain optional.
 
-1. **Confirm the OAuth redirect URIs in the provider consoles.** The site sends these values on
+1. ~~Confirm the OAuth redirect URIs in the provider consoles.~~ **Done** (issue #35 closed). The site sends these values on
    `https://www.paysdoc.nl`; logins only work if the consoles list exactly them.
 
    | Provider | `redirect_uri` sent by the site | Where to check |
@@ -124,10 +125,10 @@ custom-domain routes) is resolved; only these remain, none of them block automat
    | Google | `https://www.paysdoc.nl/api/auth/callback/google` | Google Cloud Console → APIs & Services → Credentials → OAuth 2.0 client (`AUTH_GOOGLE_ID`) → *Authorised redirect URIs* |
    | GitHub | `https://www.paysdoc.nl/api/auth/callback/github` | GitHub → Settings → Developer settings → OAuth Apps → app (`AUTH_GITHUB_ID`) → *Authorization callback URL* |
 
-2. **A real sign-in email is waiting.** The automated magic-link check sent one to `paysdoc@gmail.com` (from
+2. ~~A real sign-in email is waiting.~~ **Done**, used for the magic-link item. The automated magic-link check sent one to `paysdoc@gmail.com` (from
    `noreply@paysdoc.nl`, single use, valid until 2026-09-17 10:59Z). Use it for the magic-link item in
    [[Manual-Verification-Checklist]] or let it expire.
-3. **Complete the manual checklist**: Google and GitHub sign-in, magic link, dashboard add/remove, admin page
+3. ~~Complete the manual checklist~~ **Done**, all sections passed: Google and GitHub sign-in, magic link, dashboard add/remove, admin page
    (the empty state *No projects found.* is the expected result, all cost tables are empty), sign-out, and a
    real-phone layout check. See [[Manual-Verification-Checklist]].
 4. **Optional, dashboard-only hardening** (the Worker already handles both, this only moves them to the edge):
@@ -135,6 +136,31 @@ custom-domain routes) is resolved; only these remain, none of them block automat
 5. **FYI**: `https://paysdoc-nl.paysdoc.workers.dev/` is 404 since the zone routes exist; add `"workers_dev": true`
    to `wrangler.jsonc` if a Cloudflare-hosted preview URL is wanted back. The four `smoke+…@paysdoc.nl` keys written
    by the smoke runs stay in the production `INTEREST_KV` namespace (the ops workflow has no delete operation).
+
+## Manual verification
+
+Walked by the site owner on 2026-09-16 against [[Manual-Verification-Checklist]], after the automated checks above.
+Browser and phone model were not recorded.
+
+| Section | Result | Notes |
+| --- | --- | --- |
+| 0. Provider console settings | pass | Google client and GitHub OAuth App both registered with the `www` callback URLs |
+| 1. Google login | pass | First attempt failed inside the site with `table accounts has no column named oauth_token`; fixed by PR [#45](https://github.com/paysdoc/paysdoc.nl/pull/45) (migration `0004_accounts_oauth1_columns.sql`), deploy run [35099819388](https://github.com/paysdoc/paysdoc.nl/actions/runs/35099819388) |
+| 2. GitHub login | pass | After the callback URL was fixed in the GitHub console, the callback was rejected with `unexpected "iss" (issuer) response parameter value` (GitHub now sends `iss`, RFC 9207); fixed by PR [#46](https://github.com/paysdoc/paysdoc.nl/pull/46) (explicit provider issuer), deploy run [35103409062](https://github.com/paysdoc/paysdoc.nl/actions/runs/35103409062) |
+| 3. Magic link | pass | Email arrived, link signed in, second use rejected with `error=Verification` |
+| 4. Dashboard repository list | pass | Add, remove and both invalid-URL paths behaved as described (server rejection still shows the generic *Application error* page; see follow-up below) |
+| 5. Admin cost page | pass | Admin sees the empty *No projects found.* state; non-admin and signed-out visitors are redirected |
+| 6. Sign out | pass | Returns to the home page; `/dashboard` re-locked |
+| 7. Mobile on a real phone | pass | Navbar, hero, interest form, footer and login page all usable |
+
+**Operational note.** The GitHub OAuth app's client id and secret were rotated in the console during item 2 and
+set on the Worker by hand; the next two deploys overwrote them with the older values from GitHub Actions secrets,
+because `deploy.yml` runs `wrangler secret bulk` on every run. The Actions secrets were then updated (the intended
+rotation path, runbook §4). Dashboard edits to Worker secrets are always temporary.
+
+**Follow-up (not a deploy failure).** Item 4's server-side rejection of a non-GitHub/GitLab URL renders the generic
+Next.js *Application error* page because the app has no `error.tsx` boundary; a friendlier inline error is tracked in
+[#47](https://github.com/paysdoc/paysdoc.nl/issues/47).
 
 ## Re-running the smoke test
 

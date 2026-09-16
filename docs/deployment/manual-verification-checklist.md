@@ -18,6 +18,10 @@ Everything a script can verify on `https://www.paysdoc.nl` has been verified and
 real person in a browser with real provider accounts and a real mailbox. Tick each box once the expected result
 was observed; if something differs, note what you saw next to the item and open an issue.
 
+**Walked on 2026-09-16 by the site owner: every item in sections 0–7 passed.** Two production fixes were needed
+along the way and are recorded in [[Production-Smoke-Test]] under *Manual verification*: PR #45 (missing
+`oauth_token` columns on `accounts`) and PR #46 (GitHub provider issuer for RFC 9207 callbacks).
+
 **Precondition for all login items:** the OAuth callback URLs in the two provider consoles must be the ones the
 site sends (section 0). Until they are, Google and GitHub will show a `redirect_uri_mismatch` style error instead of
 signing you in.
@@ -33,10 +37,10 @@ the first successful item in section 1–3 creates the first user row.
 These are the exact `redirect_uri` values the site sent on 2026-09-16 during the automated OAuth-start check
 (`POST /api/auth/signin/google` and `/github` on the live domain). They cannot be read from the repo or the API.
 
-- [ ] **Google** — Google Cloud Console → APIs & Services → Credentials → the OAuth 2.0 client whose id is the
+- [x] **Google** — Google Cloud Console → APIs & Services → Credentials → the OAuth 2.0 client whose id is the
       `AUTH_GOOGLE_ID` secret → *Authorised redirect URIs* contains exactly
       `https://www.paysdoc.nl/api/auth/callback/google`
-- [ ] **GitHub** — GitHub → Settings → Developer settings → OAuth Apps → the app whose client id is the
+- [x] **GitHub** — GitHub → Settings → Developer settings → OAuth Apps → the app whose client id is the
       `AUTH_GITHUB_ID` secret → *Authorization callback URL* is exactly
       `https://www.paysdoc.nl/api/auth/callback/github`
 
@@ -45,7 +49,7 @@ before any callback is handled.
 
 ## 1. Google login
 
-- [ ] **Google login lands on the dashboard**
+- [x] **Google login lands on the dashboard**
   - URL: `https://www.paysdoc.nl/login`
   - Steps: use a private/incognito window so no session cookie exists. Click **Sign in with Google**, pick the
     `paysdoc@gmail.com` account, accept the consent screen if shown.
@@ -57,7 +61,7 @@ before any callback is handled.
 
 ## 2. GitHub login
 
-- [ ] **GitHub login lands on the dashboard**
+- [x] **GitHub login lands on the dashboard**
   - URL: `https://www.paysdoc.nl/login` (sign out first, or use a fresh private window)
   - Steps: click **Sign in with GitHub**, authorise the app if asked.
   - Expected: same as Google — `/dashboard`, *Logged in as <the email GitHub reports>*, avatar + name in the
@@ -71,7 +75,7 @@ before any callback is handled.
 The automated check on 2026-09-16 already sent one real sign-in mail to `paysdoc@gmail.com` (valid until
 2026-09-17 10:59 UTC, single use). Either use that mail or request a new one as described.
 
-- [ ] **Email arrives**
+- [x] **Email arrives**
   - URL: `https://www.paysdoc.nl/login`
   - Steps: enter `paysdoc@gmail.com` in the email field, click **Send magic link**.
   - Expected: the page changes to `https://www.paysdoc.nl/auth/verify-request?provider=email&type=email` with the
@@ -82,11 +86,11 @@ The automated check on 2026-09-16 already sent one real sign-in mail to `paysdoc
     configuration*, and on the domain showing as *Verified* at https://resend.com/domains. A redirect to
     `/login?error=…` instead of the *Check your email* page means the email Worker or Resend rejected the request
     (it did not on 2026-09-16).
-- [ ] **Link signs you in**
+- [x] **Link signs you in**
   - Steps: click the button/link in the email (it points at `https://www.paysdoc.nl/api/auth/callback/email?…`).
   - Expected: you land on `https://www.paysdoc.nl/dashboard` with *Logged in as paysdoc@gmail.com*; the navbar shows
     the signed-in state with a coloured **P** initial (email sign-ins have no avatar image).
-- [ ] **Second click is rejected**
+- [x] **Second click is rejected**
   - Steps: sign out (item 6) or open a second private window, then click the same link in the same email again.
   - Expected: you are **not** signed in; the site shows `https://www.paysdoc.nl/login?error=Verification` (the
     token is deleted from D1 on first use, so the second use fails verification). Requesting a fresh link works
@@ -96,16 +100,16 @@ The automated check on 2026-09-16 already sent one real sign-in mail to `paysdoc
 
 Do this while signed in (any provider).
 
-- [ ] **Add a GitHub repository**
+- [x] **Add a GitHub repository**
   - URL: `https://www.paysdoc.nl/dashboard`
   - Steps: in **Add Repository** enter `https://github.com/paysdoc/paysdoc.nl` and click **Add Repository**.
   - Expected: the button briefly reads *Adding…*, then the entry appears under **Registered Repositories** as
     **paysdoc/paysdoc.nl** with the badge **github** and the URL as a link (opens in a new tab). No *Linked project*
     line is expected, because the production `projects` table has no row for that URL.
-- [ ] **Remove it**
+- [x] **Remove it**
   - Steps: click **Remove** on the entry.
   - Expected: the entry disappears and the list shows *No repositories yet.* (assuming it was the only one).
-- [ ] **Invalid URL shows an error**
+- [x] **Invalid URL shows an error**
   - Steps (browser validation): type `not a url` and click **Add Repository**.
   - Expected: the browser blocks the submit with its own *Please enter a URL* tooltip; nothing is sent.
   - Steps (server validation): type `https://example.com/foo/bar` (a valid URL that is not `github.com` or
@@ -118,7 +122,7 @@ Do this while signed in (any provider).
 
 ## 5. Admin: cost per project
 
-- [ ] **Admin sees the cost page**
+- [x] **Admin sees the cost page**
   - URL: `https://www.paysdoc.nl/admin`, signed in as `paysdoc@gmail.com` (Google or magic link)
   - Expected: heading **Cost per Project** with `paysdoc@gmail.com` at the top right. **Expected body on
     2026-09-16: the empty state *No projects found.*** — the Phase 02 schema check found `projects`,
@@ -130,18 +134,18 @@ Do this while signed in (any provider).
   - Not expected: a redirect to `/dashboard` (would mean the role resolved to `client`: the signed-in email is not
     in `src/lib/roles.ts`) or an *Application error* page (would mean the tables are missing — check
     `d1-schema` via the ops workflow).
-- [ ] **Non-admin is redirected**
+- [x] **Non-admin is redirected**
   - URL: `https://www.paysdoc.nl/admin`, signed in with an account whose email is **not** `paysdoc@gmail.com` or
     `martin@paysdoc.nl` (for example a second GitHub account, or a magic link to another mailbox you control).
   - Expected: immediate redirect to `https://www.paysdoc.nl/dashboard`; the admin page never renders.
-- [ ] **Signed-out visitor is redirected to login**
+- [x] **Signed-out visitor is redirected to login**
   - URL: `https://www.paysdoc.nl/admin` in a private window.
   - Expected: redirect to `https://www.paysdoc.nl/login` (already verified automatically; re-check only if you
     changed the middleware).
 
 ## 6. Sign out
 
-- [ ] **Logout returns to the public site and re-locks the dashboard**
+- [x] **Logout returns to the public site and re-locks the dashboard**
   - Steps: open the avatar/name menu in the navbar and click **Logout**.
   - Expected: you land on `https://www.paysdoc.nl/` (the home page) and the navbar shows **Login** again. Now open
     `https://www.paysdoc.nl/dashboard` directly: it redirects to `https://www.paysdoc.nl/login`. Opening
@@ -152,24 +156,24 @@ Do this while signed in (any provider).
 The smoke test screenshots a 375 px viewport in headless Chromium; touch behaviour, real fonts and the on-screen
 keyboard need a device. Use the phone's own browser over mobile data as well as Wi-Fi if possible.
 
-- [ ] **Navbar**
+- [x] **Navbar**
   - URL: `https://www.paysdoc.nl/`
   - Expected: logo + **PAYSDOC / consultancy** on the left, a hamburger button on the right, no desktop links
     visible. Tapping the hamburger opens a panel with **Home, About, Services, How It Works, Contact, Login** (or
     your name, **Dashboard**, **Logout** when signed in); tapping a link closes it and navigates; the icon toggles
     to an X while open. Nothing overflows horizontally.
-- [ ] **Hero**
+- [x] **Hero**
   - Expected: the home hero headline wraps without clipping, the call-to-action button is fully tappable, the
     text stays readable without pinch-zoom.
-- [ ] **Interest form**
+- [x] **Interest form**
   - URL: `https://www.paysdoc.nl/contact` (the same form is at the bottom of `/how-it-works`)
   - Steps: tap the email field (keyboard should be the email layout), enter an address you can identify later, submit.
   - Expected: the form is replaced by *Thanks! We'll be in touch.*; the button and input do not overflow the
     screen; the entry lands in the `INTEREST_KV` namespace (`kv-keys` via the ops workflow if you want proof).
-- [ ] **Footer**
+- [x] **Footer**
   - Expected: LinkedIn and GitHub links and the copyright line stack cleanly at the bottom of every page and are
     tappable; the `mailto:info@paysdoc.nl` link on `/contact` opens the mail app.
-- [ ] **Login page on the phone**
+- [x] **Login page on the phone**
   - URL: `https://www.paysdoc.nl/login`
   - Expected: the three buttons and the email field fit the width; a Google or GitHub sign-in completes on the
     phone and lands on `/dashboard` with the mobile signed-in menu.
