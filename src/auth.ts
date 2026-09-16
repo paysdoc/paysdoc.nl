@@ -1,6 +1,5 @@
 import NextAuth from 'next-auth';
-import Google from 'next-auth/providers/google';
-import GitHub from 'next-auth/providers/github';
+import { oauthProviders } from '@/lib/oauth-providers';
 import { D1Adapter } from '@auth/d1-adapter';
 import { getCloudflareContext } from '@opennextjs/cloudflare';
 import { resolveRole } from '@/lib/roles';
@@ -43,14 +42,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth(async () => {
     trustHost: true,
     adapter: D1Adapter(env.DB),
     providers: [
-      Google({
-        clientId: googleId,
-        clientSecret: googleSecret,
-      }),
-      GitHub({
-        clientId: githubId,
-        clientSecret: githubSecret,
-      }),
+      ...oauthProviders({ googleId, googleSecret, githubId, githubSecret }),
       emailProvider,
     ],
     session: { strategy: 'jwt' },
