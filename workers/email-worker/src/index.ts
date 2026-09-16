@@ -1,7 +1,7 @@
 interface Env {
   EMAIL_FROM: string;
-  AUTH_SECRET: { get(): Promise<string> };
-  RESEND_API_KEY: { get(): Promise<string> };
+  AUTH_SECRET: string;
+  RESEND_API_KEY: string;
 }
 
 interface EmailRequestBody {
@@ -60,10 +60,8 @@ const handler = {
     }
 
     const emailFrom = env.EMAIL_FROM;
-    const [authSecret, resendApiKey] = await Promise.all([
-      env.AUTH_SECRET.get(),
-      env.RESEND_API_KEY.get(),
-    ]);
+    const authSecret = env.AUTH_SECRET;
+    const resendApiKey = env.RESEND_API_KEY;
 
     const authHeader = request.headers.get('Authorization');
     if (!authHeader || authHeader !== `Bearer ${authSecret}`) {

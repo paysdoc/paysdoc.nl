@@ -1,25 +1,40 @@
 {
 	"name": "paysdoc-nl",
-	"pages_build_output_dir": ".open-next/assets",
+	"main": ".open-next/worker.js",
 	"compatibility_date": "2025-04-01",
 	"compatibility_flags": [
-		"nodejs_compat"
+		"nodejs_compat",
+		"global_fetch_strictly_public"
 	],
+	"assets": {
+		"directory": ".open-next/assets",
+		"binding": "ASSETS"
+	},
+	"services": [
+		{
+			"binding": "WORKER_SELF_REFERENCE",
+			"service": "paysdoc-nl"
+		}
+	],
+	"observability": {
+		"enabled": true
+	},
 	"vars": {
 		"COST_API_URL": "https://costs.paysdoc.nl",
 		"EMAIL_WORKER_URL": "https://email.paysdoc.workers.dev"
 	},
 	"d1_databases": [
 		{
-			"binding": "paysdoc_auth_db",
+			"binding": "DB",
 			"database_name": "paysdoc-auth-db",
 			"database_id": "138b4abc-dc32-4f08-98a7-87442977a5d3"
 		}
 	],
 	"kv_namespaces": [
+		// id is created and filled in by Phase 02 via the cloudflare-ops workflow
 		{
 			"binding": "INTEREST_KV",
-			"id": "<placeholder>"
+			"id": "eefd36f984b64b4eb95f368a86867aaa"
 		}
 	]
 }
