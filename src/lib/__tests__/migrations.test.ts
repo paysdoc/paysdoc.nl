@@ -2,6 +2,7 @@ import { describe, it, expect, beforeAll } from 'vitest';
 import { createRequire } from 'node:module';
 import fs from 'node:fs';
 import path from 'node:path';
+import { D1Adapter } from '@auth/d1-adapter';
 
 // node:sqlite is built into Node >= 22.13 but @types/node@20 has no typings for it,
 // so load it through require() and give it a minimal local type.
@@ -27,13 +28,37 @@ function loadMigrations(): { name: string; sql: string }[] {
     .map((name) => ({ name, sql: fs.readFileSync(path.join(migrationsDir, name), 'utf8') }));
 }
 
+// Mirrors `wrangler d1 migrations apply`: each file runs exactly once, tracked in d1_migrations.
+// (SQLite has no ADD COLUMN IF NOT EXISTS, so ALTER migrations rely on this bookkeeping.)
 function applyAll(db: SqliteDb): void {
-  for (const m of loadMigrations()) db.exec(m.sql);
+  db.exec(`CREATE TABLE IF NOT EXISTS d1_migrations (name TEXT PRIMARY KEY)`);
+  const applied = new Set(db.prepare(`SELECT name FROM d1_migrations`).all().map((r) => r.name as string));
+  for (const m of loadMigrations()) {
+    if (applied.has(m.name)) continue;
+    db.exec(m.sql);
+    db.prepare(`INSERT INTO d1_migrations (name) VALUES (?)`).run(m.name);
+  }
+}
+
+// Minimal D1 database over node:sqlite covering what @auth/d1-adapter's helpers call:
+// prepare(sql).bind(...args).run() and .first()
+type D1Like = Parameters<typeof D1Adapter>[0];
+function asD1(db: SqliteDb): D1Like {
+  const statement = (sql: string, params: unknown[]) => ({
+    bind: (...next: unknown[]) => statement(sql, next),
+    run: async () => {
+      db.prepare(sql).run(...params);
+      return { success: true, results: [], meta: {} };
+    },
+    first: async () => db.prepare(sql).get(...params) ?? null,
+    all: async () => ({ success: true, results: db.prepare(sql).all(...params), meta: {} }),
+  });
+  return { prepare: (sql: string) => statement(sql, []) } as unknown as D1Like;
 }
 
 function tableNames(db: SqliteDb): string[] {
   return db
-    .prepare(`SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' ORDER BY name`)
+    .prepare(`SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' AND name <> 'd1_migrations' ORDER BY name`)
     .all()
     .map((r) => r.name as string);
 }
@@ -53,7 +78,7 @@ describe('D1 migrations', () => {
 
   it('are numbered sequentially starting at 0001', () => {
     const names = loadMigrations().map((m) => m.name);
-    expect(names.length).toBeGreaterThanOrEqual(3);
+    expect(names.length).toBeGreaterThanOrEqual(4);
     names.forEach((name, i) => {
       expect(name).toMatch(new RegExp(`^${String(i + 1).padStart(4, '0')}_[a-z0-9_]+\\.sql$`));
     });
@@ -87,7 +112,8 @@ describe('D1 migrations', () => {
   it('use IF NOT EXISTS on every CREATE statement', () => {
     for (const m of loadMigrations()) {
       const creates = m.sql.match(/CREATE (?:UNIQUE )?(?:TABLE|INDEX)\b[^\n]*/g) ?? [];
-      expect(creates.length).toBeGreaterThan(0);
+      const alters = m.sql.match(/ALTER TABLE\b[^\n]*/g) ?? [];
+      expect(creates.length + alters.length).toBeGreaterThan(0);
       for (const stmt of creates) expect(stmt).toContain('IF NOT EXISTS');
     }
   });
@@ -156,6 +182,38 @@ describe('D1 migrations', () => {
       )
       .all(1);
     expect(tokens).toEqual([{ token_type: 'input', total_count: 10 }]);
+  });
+
+  it('let @auth/d1-adapter link a Google OAuth2 account (regression: missing oauth_token columns)', async () => {
+    expect(columns(db, 'accounts')).toEqual(expect.arrayContaining(['oauth_token', 'oauth_token_secret']));
+
+    const adapter = D1Adapter(asD1(db));
+    const user = await adapter.createUser!({
+      id: 'ignored-by-adapter',
+      name: 'Paysdoc',
+      email: 'oauth@example.com',
+      emailVerified: null,
+      image: null,
+    });
+    expect(user.email).toBe('oauth@example.com');
+
+    // The exact shape Auth.js passes for an OIDC provider: no OAuth 1.0a fields present.
+    await expect(
+      adapter.linkAccount!({
+        userId: user.id,
+        type: 'oidc',
+        provider: 'google',
+        providerAccountId: '1234567890',
+        access_token: 'ya29.token',
+        expires_at: 1_800_000_000,
+        token_type: 'bearer',
+        scope: 'openid profile email',
+        id_token: 'eyJ.header.payload',
+      })
+    ).resolves.toBeDefined();
+
+    const linked = await adapter.getUserByAccount!({ provider: 'google', providerAccountId: '1234567890' });
+    expect(linked?.id).toBe(user.id);
   });
 
   it('reject an unknown client_repos provider', () => {
