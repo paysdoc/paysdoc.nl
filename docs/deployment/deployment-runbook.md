@@ -121,7 +121,7 @@ the `vars` blocks of the two `wrangler.jsonc` files.
 | Operation | Command | Where to look |
 | --- | --- | --- |
 | Deploy | merge a PR into `main` (push to `main` triggers `deploy.yml`) | `gh run list --workflow=deploy.yml`, then `gh run watch <id>` |
-| Manual deploy | `gh workflow run deploy.yml` | same; the job summary prints the `workers.dev` URL |
+| Manual deploy | `gh workflow run deploy.yml` | same; the job summary prints the Worker's triggers (the two zone routes, or the `workers.dev` URL when no routes are set) |
 | Inspect deployments | `gh workflow run cloudflare-ops.yml -f operation=deployments` | `gh run view <id> --log` |
 | List secret names | `... -f operation=secret-list` (site) / `... -f operation=worker-secret-list` (email) | log |
 | Interest-form entries | `... -f operation=kv-keys`, then `... -f operation=kv-get -f argument=<email>` | log |
@@ -202,7 +202,7 @@ Cloudflare account or a new token would need the same sequence; details are in [
 | Deploy is green but `www.paysdoc.nl` still serves the old (empty) Pages project | Routes not attached (`routes` block missing from `wrangler.jsonc`, or token lacks *Workers Routes · Edit*) | `wrangler deploy` output must list both routes; alternatively add them by hand in the dashboard (Workers & Pages → `paysdoc-nl` → Settings → Domains & Routes) and remove the `routes` block |
 | `www.paysdoc.nl/` redirects to `/:path*` (or any redirect loops) | OpenNext tests `has` host/header values as *unanchored* regexes and only compiles the destination when a param was captured | Keep the anchored `^paysdoc\.nl$` / `^http$` values and the separate `/` and `/:path+` rules in `next.config.ts`; `src/lib/__tests__/deploy-config.test.ts` pins them |
 | OAuth redirect carries `client_id=-` (or any secret is the literal `-`) | Secrets were uploaded with `gh secret set NAME --body -`, which stores a hyphen instead of reading stdin | Re-upload by piping the value on stdin (`printf %s "$VALUE" \| gh secret set NAME`), then `gh workflow run deploy.yml`. Compare lengths in the redirect URL, never values |
-| `paysdoc-nl.paysdoc.workers.dev` returns 404 while `www` works | Expected: wrangler disables the `workers.dev` subdomain once zone routes exist and `workers_dev` is unset; the deploy summary then shows *not found in wrangler output* | Nothing to fix. Add `"workers_dev": true` to `wrangler.jsonc` only if a Cloudflare-hosted preview URL is wanted |
+| `paysdoc-nl.paysdoc.workers.dev` returns 404 while `www` works | Expected: wrangler disables the `workers.dev` subdomain once zone routes exist and `workers_dev` is unset; the deploy job summary lists the two routes as the Worker's triggers | Nothing to fix. Add `"workers_dev": true` to `wrangler.jsonc` only if a Cloudflare-hosted preview URL is wanted |
 | `http://www.paysdoc.nl/` serves the page instead of redirecting | The plain-http redirect rule in `next.config.ts` was removed, or the zone's *Always Use HTTPS* is off and nothing else upgrades | Keep the `x-forwarded-proto` rules; optionally turn on *Always Use HTTPS* (dashboard → SSL/TLS → Edge Certificates) as belt and braces |
 | Security headers missing on a page | `headers()` in `next.config.ts` changed, or the response is a redirect/middleware response or a static asset (those never get them) | `curl -sI https://www.paysdoc.nl/` must show the three headers; for assets a `public/_headers` file would be needed |
 
