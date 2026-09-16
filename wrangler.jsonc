@@ -41,7 +41,7 @@
 		// id is created and filled in by Phase 02 via the cloudflare-ops workflow
 		{
 			"binding": "INTEREST_KV",
-			"id": "<placeholder>"
+			"id": "eefd36f984b64b4eb95f368a86867aaa"
 		}
 	]
 }
