@@ -23,13 +23,13 @@ in [[Production-Smoke-Test]].
 | Item | Value |
 | --- | --- |
 | Merge | PR [#39](https://github.com/paysdoc/paysdoc.nl/pull/39) `deploy/workers-migration` → `main`, merge commit `d12d7b0` (closes #28) |
-| Site Worker | `paysdoc-nl`, **`https://paysdoc-nl.paysdoc.workers.dev`** |
+| Site Worker | `paysdoc-nl`, **`https://www.paysdoc.nl`** (zone routes since 2026-09-16; the `workers.dev` URL is disabled by wrangler once routes exist) |
 | Site version id | `aeb4affd-ec96-45ac-bedb-f92e2e627b88` (deploy run [35084020706](https://github.com/paysdoc/paysdoc.nl/actions/runs/35084020706)) |
 | Email Worker | `https://email.paysdoc.workers.dev`, version `70dfff7d-cdc6-4cab-9580-537fd9951f5d` |
 | `INTEREST_KV` namespace | title `Interest`, id **`eefd36f984b64b4eb95f368a86867aaa`** (bound in `wrangler.jsonc`, commit `7cd246a`) |
 | D1 database | `paysdoc-auth-db`, id `138b4abc-dc32-4f08-98a7-87442977a5d3`, migrations 0001–0003 applied remotely |
 | Smoke test on workers.dev | 28/28 passed (`BASE_URL=https://paysdoc-nl.paysdoc.workers.dev npm run smoke`) |
-| Custom domain | **not yet attached** — `www.paysdoc.nl` and the apex still 404 until the Phase 03 routes land (#34) |
+| Custom domain | **attached 2026-09-16** — PR [#40](https://github.com/paysdoc/paysdoc.nl/pull/40) added zone routes `www.paysdoc.nl/*` and `paysdoc.nl/*` (closes #34); PR [#41](https://github.com/paysdoc/paysdoc.nl/pull/41) fixed the apex → www redirect (see below); deploy run [35085702387](https://github.com/paysdoc/paysdoc.nl/actions/runs/35085702387), version `3820902e…` superseded by the #41 deploy |
 
 ## What changed
 
@@ -105,12 +105,15 @@ registered for `www.paysdoc.nl` and the magic link would point at the wrong host
 
 ## Open items
 
-- **Custom domain routes** (#34): branch `feat/custom-domain-routes` (`a0372d6`) adds zone routes for
-  `www.paysdoc.nl/*` and `paysdoc.nl/*`, an apex → www redirect and `metadataBase`. It must be rebased onto
-  `main` (the KV id changed `wrangler.jsonc`) and merged; `wrangler deploy` then needs *Zone · Workers Routes ·
-  Edit* on the API token, or the routes must be added in the dashboard instead.
+- ~~**Custom domain routes** (#34)~~ — done 2026-09-16 (PRs #40 and #41). Note for future redirect rules: the
+  OpenNext runtime (`@opennextjs/aws` 3.9.16) tests a `has` host value as an **unanchored** regex and leaves the
+  destination literal when the source captured no params. A single `/:path*` rule with `value: 'paysdoc.nl'`
+  therefore made `www.paysdoc.nl/` loop to `/:path*`. `next.config.ts` now uses `^paysdoc\.nl$` and two rules
+  (`/` and `/:path+`); `src/lib/__tests__/deploy-config.test.ts` pins both. Verified with
+  `npx wrangler dev --local --host paysdoc.nl` (and `--host www.paysdoc.nl`) before deploying.
 - **Real-domain verification**: OAuth callbacks, magic-link sign-in, security headers, TTFB and the manual
-  checklist all wait for the routes.
+  checklist (Phase 03). Observed after the routes landed: `http://www.paysdoc.nl/` answers 200 instead of
+  redirecting to https — that is the zone's *Always Use HTTPS* setting, not the Worker.
 - **PR [#38](https://github.com/paysdoc/paysdoc.nl/pull/38)** (docs wrap-up: runbook, README sync, interest route
   test) is still open. Its status note predates this deploy and should be refreshed before merging.
 - **Housekeeping**: the "filled in by Phase 02" comment above the `kv_namespaces` block in `wrangler.jsonc` is
