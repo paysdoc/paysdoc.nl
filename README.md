@@ -73,7 +73,8 @@ workers/
   email-worker/         # Cloudflare Worker — sends magic link emails via Resend
 migrations/             # Cloudflare D1 SQL migrations
 scripts/
-  smoke.mjs             # Playwright smoke test (npm run smoke)
+  smoke.mjs             # Playwright smoke test (npm run smoke; -- --production adds the real-domain checks)
+  lib/production-rules.mjs  # Pure og:url / https-only / no-pages.dev rules used by --production (unit-tested)
   dev/                  # Local-only D1 fixtures for the preview (never applied to production)
 .github/workflows/
   deploy.yml            # Build + deploy to Cloudflare Workers on push to main
@@ -182,7 +183,13 @@ Non-secret configuration (`COST_API_URL`, `EMAIL_WORKER_URL`, `EMAIL_FROM`) live
 npm run build          # OpenNext build → .open-next/
 npm run preview        # serves the built Worker in workerd (pass -- --port 8788 to pick a port)
 BASE_URL=http://localhost:8788 npm run smoke   # Playwright smoke test against the preview
+BASE_URL=https://www.paysdoc.nl npm run smoke -- --production   # same, plus the production-only checks
 ```
+
+`--production` additionally asserts that every public page has an `og:url` on `https://www.paysdoc.nl`, that its
+`link[rel=icon]` fetches with 200, and that no request made while rendering any page goes over plain `http:` or to
+the retired `*.pages.dev` project. The JSON report and screenshots land in `.maestro/playbooks/Initiation/Working`
+(override with `SMOKE_OUT_DIR`); the production evidence kept in the repo is under `docs/deployment/evidence/<date>/`.
 
 The preview reads `.dev.vars` for secrets and uses the local D1/KV state in `.wrangler/`. The protected pages (`/dashboard`, `/admin`) use the `projects`, `client_repos`, `cost_records` and `token_usage` tables created by `migrations/0002_client_repos.sql` and `migrations/0003_cost_tables.sql`, so run the local migrations first.
 
@@ -276,7 +283,7 @@ Add your domain in the [Resend dashboard](https://resend.com/domains) and config
 | `npm run dev` | Start development server |
 | `npm run build` | Production build (OpenNext for Cloudflare) |
 | `npm run preview` | Serve the built Worker locally in the Cloudflare `workerd` runtime |
-| `npm run smoke` | Playwright smoke test against `BASE_URL` (default `http://localhost:8788`) |
+| `npm run smoke` | Playwright smoke test against `BASE_URL` (default `http://localhost:8788`); add `-- --production` for the real-domain checks |
 | `npm run start` | Start production server |
 | `npm run lint` | Run ESLint |
 | `npm run test` | Run unit tests (Vitest) |
