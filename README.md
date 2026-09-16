@@ -72,11 +72,18 @@ workers/
     wrangler.jsonc
 migrations/             # Cloudflare D1 SQL migrations (auth tables, client repos, cost tables)
 scripts/
-  smoke.mjs             # Playwright smoke test (npm run smoke)
+  smoke.mjs             # Playwright smoke test (npm run smoke; -- --production adds the real-domain checks)
+  check-links.mjs       # Playwright broken-link crawl of the public pages (npm run check-links)
+  lib/production-rules.mjs  # Pure og:url / https-only / no-pages.dev rules used by --production (unit-tested)
+  lib/link-rules.mjs    # Pure link classification rules used by check-links (unit-tested)
 docs/
   deployment/           # Deployment documentation cluster (start at index.md)
     index.md
     deployment-runbook.md
+    2026-workers-migration.md
+    production-smoke-test.md
+    manual-verification-checklist.md
+    evidence/<date>/    # Smoke/link reports and screenshots from production runs
 .github/workflows/
   deploy.yml            # Build + deploy to Cloudflare Workers on push to main
   cloudflare-ops.yml    # Manual wrangler operations against the live account
@@ -154,7 +161,7 @@ AUTH_GITHUB_SECRET=your-github-client-secret
 
 ## Deployment
 
-The site is deployed to [Cloudflare Workers](https://developers.cloudflare.com/workers/) with static assets via GitHub Actions (`.github/workflows/deploy.yml`). The full operating guide — architecture, secrets model, everyday operations, first-deploy steps and a troubleshooting table — is the [Deployment Runbook](./docs/deployment/deployment-runbook.md); [`docs/deployment/index.md`](./docs/deployment/index.md) lists every deployment document, including the manual verification checklist (`docs/deployment/manual-verification-checklist.md`, written as part of the production verification tracked in [#36](https://github.com/paysdoc/paysdoc.nl/issues/36)). The [`@opennextjs/cloudflare`](https://opennext.js.org/cloudflare) adapter builds the Next.js app into a Worker (`.open-next/worker.js`) plus an assets directory (`.open-next/assets`); `wrangler.jsonc` points `main` at the Worker and binds the assets as `ASSETS`, so `wrangler deploy` ships both. On every push to `main` (or a manual `workflow_dispatch`), the workflow:
+The site is deployed to [Cloudflare Workers](https://developers.cloudflare.com/workers/) with static assets via GitHub Actions (`.github/workflows/deploy.yml`). The full operating guide — architecture, secrets model, everyday operations, first-deploy steps and a troubleshooting table — is the [Deployment Runbook](./docs/deployment/deployment-runbook.md); [`docs/deployment/index.md`](./docs/deployment/index.md) lists every deployment document, including the [Manual verification checklist](./docs/deployment/manual-verification-checklist.md) (the human steps after a deploy: OAuth logins, magic link, dashboard and admin) and the [Production smoke test report](./docs/deployment/production-smoke-test.md). The [`@opennextjs/cloudflare`](https://opennext.js.org/cloudflare) adapter builds the Next.js app into a Worker (`.open-next/worker.js`) plus an assets directory (`.open-next/assets`); `wrangler.jsonc` points `main` at the Worker and binds the assets as `ASSETS`, so `wrangler deploy` ships both. On every push to `main` (or a manual `workflow_dispatch`), the workflow:
 
 1. Installs dependencies with `npm ci` (Node 22)
 2. Runs `npm run lint` and `npm test`
@@ -188,7 +195,15 @@ Non-secret configuration (`COST_API_URL`, `EMAIL_WORKER_URL`, `EMAIL_FROM`) live
 npm run build          # OpenNext build → .open-next/
 npm run preview        # serves the built Worker in workerd (pass -- --port 8788 to pick a port)
 BASE_URL=http://localhost:8788 npm run smoke   # Playwright smoke test against the preview
+BASE_URL=https://www.paysdoc.nl npm run smoke -- --production   # same, plus the production-only checks
+BASE_URL=https://www.paysdoc.nl npm run check-links   # every internal link on the public pages answers 200
 ```
+
+`--production` additionally asserts that every public page has an `og:url` on `https://www.paysdoc.nl`, that its
+`link[rel=icon]` fetches with 200, and that no request made while rendering any page goes over plain `http:` or to
+the retired `*.pages.dev` project. The JSON report and screenshots land in `.maestro/playbooks/Initiation/Working`
+(override with `SMOKE_OUT_DIR`); the production evidence kept in the repo is under `docs/deployment/evidence/<date>/`,
+summarised in `docs/deployment/production-smoke-test.md`.
 
 The preview reads `.dev.vars` for secrets and uses the local D1/KV state in `.wrangler/`. The protected pages (`/dashboard`, `/admin`) use the `projects`, `client_repos`, `cost_records` and `token_usage` tables created by `migrations/0002_client_repos.sql` and `migrations/0003_cost_tables.sql`, so run the local migrations first.
 
@@ -282,7 +297,8 @@ Add your domain in the [Resend dashboard](https://resend.com/domains) and config
 | `npm run dev` | Start development server |
 | `npm run build` | Production build (OpenNext for Cloudflare) |
 | `npm run preview` | Serve the built Worker locally in the Cloudflare `workerd` runtime |
-| `npm run smoke` | Playwright smoke test against `BASE_URL` (default `http://localhost:8788`) |
+| `npm run smoke` | Playwright smoke test against `BASE_URL` (default `http://localhost:8788`); add `-- --production` for the real-domain checks |
+| `npm run check-links` | Playwright broken-link crawl of the five public pages against `BASE_URL`; internal links must answer 200 directly, LinkedIn / GitHub / mailto must be present |
 | `npm run start` | Start production server |
 | `npm run lint` | Run ESLint |
 | `npm run test` | Run unit tests (Vitest) |

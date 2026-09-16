@@ -1,0 +1,516 @@
+{
+  "test_name": "paysdoc.nl link crawl (https://www.paysdoc.nl)",
+  "status": "passed",
+  "screenshots": [],
+  "error": null,
+  "base_url": "https://www.paysdoc.nl",
+  "started_at": "2026-09-16T11-07-52-468Z",
+  "pages": [
+    "/",
+    "/about",
+    "/services",
+    "/how-it-works",
+    "/contact"
+  ],
+  "summary": {
+    "total": 6,
+    "passed": 6,
+    "failed": 0,
+    "links": 42,
+    "internal": 30
+  },
+  "checks": [
+    {
+      "test_name": "Links: /",
+      "status": "passed",
+      "screenshots": [],
+      "error": null,
+      "links": [
+        {
+          "kind": "internal",
+          "href": "/",
+          "url": "https://www.paysdoc.nl/",
+          "hash": null,
+          "text": "PAYSDOCconsultancy",
+          "problem": null
+        },
+        {
+          "kind": "internal",
+          "href": "/about",
+          "url": "https://www.paysdoc.nl/about",
+          "hash": null,
+          "text": "About",
+          "problem": null
+        },
+        {
+          "kind": "internal",
+          "href": "/services",
+          "url": "https://www.paysdoc.nl/services",
+          "hash": null,
+          "text": "Services",
+          "problem": null
+        },
+        {
+          "kind": "internal",
+          "href": "/how-it-works",
+          "url": "https://www.paysdoc.nl/how-it-works",
+          "hash": null,
+          "text": "How It Works",
+          "problem": null
+        },
+        {
+          "kind": "internal",
+          "href": "/contact",
+          "url": "https://www.paysdoc.nl/contact",
+          "hash": null,
+          "text": "Contact",
+          "problem": null
+        },
+        {
+          "kind": "internal",
+          "href": "/login",
+          "url": "https://www.paysdoc.nl/login",
+          "hash": null,
+          "text": "Login",
+          "problem": null
+        },
+        {
+          "kind": "external",
+          "href": "https://www.linkedin.com/in/martinkoster",
+          "url": "https://www.linkedin.com/in/martinkoster",
+          "hash": null,
+          "text": "LinkedIn",
+          "problem": null
+        },
+        {
+          "kind": "external",
+          "href": "https://github.com/paysdoc",
+          "url": "https://github.com/paysdoc",
+          "hash": null,
+          "text": "GitHub",
+          "problem": null
+        }
+      ]
+    },
+    {
+      "test_name": "Links: /about",
+      "status": "passed",
+      "screenshots": [],
+      "error": null,
+      "links": [
+        {
+          "kind": "internal",
+          "href": "/",
+          "url": "https://www.paysdoc.nl/",
+          "hash": null,
+          "text": "PAYSDOCconsultancy",
+          "problem": null
+        },
+        {
+          "kind": "internal",
+          "href": "/about",
+          "url": "https://www.paysdoc.nl/about",
+          "hash": null,
+          "text": "About",
+          "problem": null
+        },
+        {
+          "kind": "internal",
+          "href": "/services",
+          "url": "https://www.paysdoc.nl/services",
+          "hash": null,
+          "text": "Services",
+          "problem": null
+        },
+        {
+          "kind": "internal",
+          "href": "/how-it-works",
+          "url": "https://www.paysdoc.nl/how-it-works",
+          "hash": null,
+          "text": "How It Works",
+          "problem": null
+        },
+        {
+          "kind": "internal",
+          "href": "/contact",
+          "url": "https://www.paysdoc.nl/contact",
+          "hash": null,
+          "text": "Contact",
+          "problem": null
+        },
+        {
+          "kind": "internal",
+          "href": "/login",
+          "url": "https://www.paysdoc.nl/login",
+          "hash": null,
+          "text": "Login",
+          "problem": null
+        },
+        {
+          "kind": "external",
+          "href": "https://www.linkedin.com/in/martinkoster",
+          "url": "https://www.linkedin.com/in/martinkoster",
+          "hash": null,
+          "text": "LinkedIn",
+          "problem": null
+        },
+        {
+          "kind": "external",
+          "href": "https://github.com/paysdoc",
+          "url": "https://github.com/paysdoc",
+          "hash": null,
+          "text": "GitHub",
+          "problem": null
+        }
+      ]
+    },
+    {
+      "test_name": "Links: /services",
+      "status": "passed",
+      "screenshots": [],
+      "error": null,
+      "links": [
+        {
+          "kind": "internal",
+          "href": "/",
+          "url": "https://www.paysdoc.nl/",
+          "hash": null,
+          "text": "PAYSDOCconsultancy",
+          "problem": null
+        },
+        {
+          "kind": "internal",
+          "href": "/about",
+          "url": "https://www.paysdoc.nl/about",
+          "hash": null,
+          "text": "About",
+          "problem": null
+        },
+        {
+          "kind": "internal",
+          "href": "/services",
+          "url": "https://www.paysdoc.nl/services",
+          "hash": null,
+          "text": "Services",
+          "problem": null
+        },
+        {
+          "kind": "internal",
+          "href": "/how-it-works",
+          "url": "https://www.paysdoc.nl/how-it-works",
+          "hash": null,
+          "text": "How It Works",
+          "problem": null
+        },
+        {
+          "kind": "internal",
+          "href": "/contact",
+          "url": "https://www.paysdoc.nl/contact",
+          "hash": null,
+          "text": "Contact",
+          "problem": null
+        },
+        {
+          "kind": "internal",
+          "href": "/login",
+          "url": "https://www.paysdoc.nl/login",
+          "hash": null,
+          "text": "Login",
+          "problem": null
+        },
+        {
+          "kind": "external",
+          "href": "https://www.linkedin.com/in/martinkoster",
+          "url": "https://www.linkedin.com/in/martinkoster",
+          "hash": null,
+          "text": "LinkedIn",
+          "problem": null
+        },
+        {
+          "kind": "external",
+          "href": "https://github.com/paysdoc",
+          "url": "https://github.com/paysdoc",
+          "hash": null,
+          "text": "GitHub",
+          "problem": null
+        }
+      ]
+    },
+    {
+      "test_name": "Links: /how-it-works",
+      "status": "passed",
+      "screenshots": [],
+      "error": null,
+      "links": [
+        {
+          "kind": "internal",
+          "href": "/",
+          "url": "https://www.paysdoc.nl/",
+          "hash": null,
+          "text": "PAYSDOCconsultancy",
+          "problem": null
+        },
+        {
+          "kind": "internal",
+          "href": "/about",
+          "url": "https://www.paysdoc.nl/about",
+          "hash": null,
+          "text": "About",
+          "problem": null
+        },
+        {
+          "kind": "internal",
+          "href": "/services",
+          "url": "https://www.paysdoc.nl/services",
+          "hash": null,
+          "text": "Services",
+          "problem": null
+        },
+        {
+          "kind": "internal",
+          "href": "/how-it-works",
+          "url": "https://www.paysdoc.nl/how-it-works",
+          "hash": null,
+          "text": "How It Works",
+          "problem": null
+        },
+        {
+          "kind": "internal",
+          "href": "/contact",
+          "url": "https://www.paysdoc.nl/contact",
+          "hash": null,
+          "text": "Contact",
+          "problem": null
+        },
+        {
+          "kind": "internal",
+          "href": "/login",
+          "url": "https://www.paysdoc.nl/login",
+          "hash": null,
+          "text": "Login",
+          "problem": null
+        },
+        {
+          "kind": "external",
+          "href": "https://www.linkedin.com/in/martinkoster",
+          "url": "https://www.linkedin.com/in/martinkoster",
+          "hash": null,
+          "text": "LinkedIn",
+          "problem": null
+        },
+        {
+          "kind": "external",
+          "href": "https://github.com/paysdoc",
+          "url": "https://github.com/paysdoc",
+          "hash": null,
+          "text": "GitHub",
+          "problem": null
+        }
+      ]
+    },
+    {
+      "test_name": "Links: /contact",
+      "status": "passed",
+      "screenshots": [],
+      "error": null,
+      "links": [
+        {
+          "kind": "internal",
+          "href": "/",
+          "url": "https://www.paysdoc.nl/",
+          "hash": null,
+          "text": "PAYSDOCconsultancy",
+          "problem": null
+        },
+        {
+          "kind": "internal",
+          "href": "/about",
+          "url": "https://www.paysdoc.nl/about",
+          "hash": null,
+          "text": "About",
+          "problem": null
+        },
+        {
+          "kind": "internal",
+          "href": "/services",
+          "url": "https://www.paysdoc.nl/services",
+          "hash": null,
+          "text": "Services",
+          "problem": null
+        },
+        {
+          "kind": "internal",
+          "href": "/how-it-works",
+          "url": "https://www.paysdoc.nl/how-it-works",
+          "hash": null,
+          "text": "How It Works",
+          "problem": null
+        },
+        {
+          "kind": "internal",
+          "href": "/contact",
+          "url": "https://www.paysdoc.nl/contact",
+          "hash": null,
+          "text": "Contact",
+          "problem": null
+        },
+        {
+          "kind": "internal",
+          "href": "/login",
+          "url": "https://www.paysdoc.nl/login",
+          "hash": null,
+          "text": "Login",
+          "problem": null
+        },
+        {
+          "kind": "mailto",
+          "href": "mailto:info@paysdoc.nl",
+          "url": "mailto:info@paysdoc.nl",
+          "hash": null,
+          "text": "info@paysdoc.nl",
+          "problem": null
+        },
+        {
+          "kind": "external",
+          "href": "https://linkedin.com/company/paysdoc",
+          "url": "https://linkedin.com/company/paysdoc",
+          "hash": null,
+          "text": "linkedin.com/company/paysdoc",
+          "problem": null
+        },
+        {
+          "kind": "external",
+          "href": "https://github.com/paysdoc",
+          "url": "https://github.com/paysdoc",
+          "hash": null,
+          "text": "github.com/paysdoc",
+          "problem": null
+        },
+        {
+          "kind": "external",
+          "href": "https://www.linkedin.com/in/martinkoster",
+          "url": "https://www.linkedin.com/in/martinkoster",
+          "hash": null,
+          "text": "LinkedIn",
+          "problem": null
+        }
+      ]
+    },
+    {
+      "test_name": "Links: required external destinations present (LinkedIn, GitHub, mailto)",
+      "status": "passed",
+      "screenshots": [],
+      "error": null,
+      "links": [
+        {
+          "page": "/",
+          "kind": "external",
+          "href": "https://www.linkedin.com/in/martinkoster",
+          "url": "https://www.linkedin.com/in/martinkoster",
+          "hash": null,
+          "text": "LinkedIn",
+          "problem": null
+        },
+        {
+          "page": "/",
+          "kind": "external",
+          "href": "https://github.com/paysdoc",
+          "url": "https://github.com/paysdoc",
+          "hash": null,
+          "text": "GitHub",
+          "problem": null
+        },
+        {
+          "page": "/about",
+          "kind": "external",
+          "href": "https://www.linkedin.com/in/martinkoster",
+          "url": "https://www.linkedin.com/in/martinkoster",
+          "hash": null,
+          "text": "LinkedIn",
+          "problem": null
+        },
+        {
+          "page": "/about",
+          "kind": "external",
+          "href": "https://github.com/paysdoc",
+          "url": "https://github.com/paysdoc",
+          "hash": null,
+          "text": "GitHub",
+          "problem": null
+        },
+        {
+          "page": "/services",
+          "kind": "external",
+          "href": "https://www.linkedin.com/in/martinkoster",
+          "url": "https://www.linkedin.com/in/martinkoster",
+          "hash": null,
+          "text": "LinkedIn",
+          "problem": null
+        },
+        {
+          "page": "/services",
+          "kind": "external",
+          "href": "https://github.com/paysdoc",
+          "url": "https://github.com/paysdoc",
+          "hash": null,
+          "text": "GitHub",
+          "problem": null
+        },
+        {
+          "page": "/how-it-works",
+          "kind": "external",
+          "href": "https://www.linkedin.com/in/martinkoster",
+          "url": "https://www.linkedin.com/in/martinkoster",
+          "hash": null,
+          "text": "LinkedIn",
+          "problem": null
+        },
+        {
+          "page": "/how-it-works",
+          "kind": "external",
+          "href": "https://github.com/paysdoc",
+          "url": "https://github.com/paysdoc",
+          "hash": null,
+          "text": "GitHub",
+          "problem": null
+        },
+        {
+          "page": "/contact",
+          "kind": "mailto",
+          "href": "mailto:info@paysdoc.nl",
+          "url": "mailto:info@paysdoc.nl",
+          "hash": null,
+          "text": "info@paysdoc.nl",
+          "problem": null
+        },
+        {
+          "page": "/contact",
+          "kind": "external",
+          "href": "https://linkedin.com/company/paysdoc",
+          "url": "https://linkedin.com/company/paysdoc",
+          "hash": null,
+          "text": "linkedin.com/company/paysdoc",
+          "problem": null
+        },
+        {
+          "page": "/contact",
+          "kind": "external",
+          "href": "https://github.com/paysdoc",
+          "url": "https://github.com/paysdoc",
+          "hash": null,
+          "text": "github.com/paysdoc",
+          "problem": null
+        },
+        {
+          "page": "/contact",
+          "kind": "external",
+          "href": "https://www.linkedin.com/in/martinkoster",
+          "url": "https://www.linkedin.com/in/martinkoster",
+          "hash": null,
+          "text": "LinkedIn",
+          "problem": null
+        }
+      ]
+    }
+  ]
+}
