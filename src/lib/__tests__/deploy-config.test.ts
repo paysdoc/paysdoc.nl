@@ -63,4 +63,21 @@ describe('custom domain deploy config', () => {
     const layout = fs.readFileSync(path.join(root, 'src/app/layout.tsx'), 'utf8');
     expect(layout).toMatch(/metadataBase:\s*new URL\('https:\/\/www\.paysdoc\.nl'\)/);
   });
+
+  it('sends HSTS, nosniff and a referrer policy on every rendered response', async () => {
+    const headers = await nextConfig.headers!();
+    expect(headers).toHaveLength(1);
+    const [{ source, headers: entries }] = headers;
+    expect(source).toBe('/:path*');
+    expect(entries).toEqual([
+      { key: 'Strict-Transport-Security', value: 'max-age=31536000' },
+      { key: 'X-Content-Type-Options', value: 'nosniff' },
+      { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+    ]);
+    // OpenNext compiles header values with path-to-regexp; a ':' would be read as a param.
+    for (const { key, value } of entries) {
+      expect(key).not.toMatch(/:/);
+      expect(value).not.toMatch(/:/);
+    }
+  });
 });
