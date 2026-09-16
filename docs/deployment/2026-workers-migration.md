@@ -103,6 +103,21 @@ writes `cost_records` or `token_usage` yet.
 The OAuth callbacks and the magic-link email were deliberately not exercised from workers.dev: the OAuth apps are
 registered for `www.paysdoc.nl` and the magic link would point at the wrong host. Both are Phase 03 checks.
 
+## Verification performed on www.paysdoc.nl (2026-09-16)
+
+| Check | Result |
+| --- | --- |
+| `BASE_URL=https://www.paysdoc.nl npm run smoke` (same 28 checks as on workers.dev) | 28/28 passed (run `2026-09-16T10-50-37-447Z`) |
+| `BASE_URL=https://www.paysdoc.nl npm run smoke -- --production` (28 + 7 production checks) | 35/35 passed (run `2026-09-16T10-53-30-377Z`) |
+| Production checks per page: `og:url` starts with `https://www.paysdoc.nl`, `link[rel=icon]` → 200, no request over `http:` or from `*.pages.dev` | all 7 pages pass; 39–40 requests per page, all on `https://www.paysdoc.nl` (0 off-origin) |
+| Interest form entry in production KV (`kv-keys` run 35087218278, `kv-get` runs 35087301023 and 35087492253) | both smoke emails listed; values `{"email":…,"timestamp":…}` |
+
+Evidence (final JSON report plus the desktop/mobile home, contact-success and login screenshots) is committed under
+[`docs/deployment/evidence/2026-09-16/`](evidence/2026-09-16/). The `--production` rules live in
+`scripts/lib/production-rules.mjs` and are unit-tested in `scripts/lib/__tests__/production-rules.test.mjs`.
+Observation, not a failure: `og:url` is `https://www.paysdoc.nl` on every page because only the root layout sets
+`openGraph.url`; per-page values would need `openGraph.url` in each page's `metadata`.
+
 ## Open items
 
 - ~~**Custom domain routes** (#34)~~ — done 2026-09-16 (PRs #40 and #41). Note for future redirect rules: the

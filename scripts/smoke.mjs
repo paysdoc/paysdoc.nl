@@ -11,6 +11,13 @@
  * Usage:
  *   BASE_URL=http://localhost:8788 npm run smoke     (default BASE_URL)
  *   BASE_URL=https://www.paysdoc.nl npm run smoke
+ *   BASE_URL=https://www.paysdoc.nl npm run smoke -- --production
+ *
+ * `--production` adds the checks that only make sense on the real domain:
+ * every public page advertises an `og:url` on https://www.paysdoc.nl, its
+ * `link[rel=icon]` fetches with 200, and no request made while rendering any
+ * page (in every check, desktop and mobile) goes over plain http or to the
+ * retired *.pages.dev project. The rules live in scripts/lib/production-rules.mjs.
  *
  * Output:
  *   .maestro/playbooks/Initiation/Working/smoke-<timestamp>.json  (report)
@@ -26,8 +33,10 @@
 import { chromium } from 'playwright';
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import { PRODUCTION_ORIGIN, ogUrlProblem, requestProblems } from './lib/production-rules.mjs';
 
 const BASE_URL = (process.env.BASE_URL ?? 'http://localhost:8788').replace(/\/+$/, '');
+const PRODUCTION = process.argv.includes('--production');
 const OUT_DIR = path.resolve(
   process.env.SMOKE_OUT_DIR ?? '.maestro/playbooks/Initiation/Working'
 );
@@ -87,7 +96,11 @@ function reportPath(absolutePath) {
 function watchPage(page) {
   const consoleErrors = [];
   const failedRequests = [];
+  const requestUrls = [];
 
+  page.on('request', (req) => {
+    requestUrls.push(req.url());
+  });
   page.on('console', (msg) => {
     if (msg.type() === 'error') consoleErrors.push(msg.text());
   });
@@ -106,10 +119,18 @@ function watchPage(page) {
   });
 
   return {
+    /** Every URL requested since the watcher was attached (document, assets, XHR). */
+    requestUrls() {
+      return [...requestUrls];
+    },
     problems() {
       const out = [];
       if (consoleErrors.length) out.push(`console errors: ${JSON.stringify(consoleErrors)}`);
       if (failedRequests.length) out.push(`failed requests: ${JSON.stringify(failedRequests)}`);
+      if (PRODUCTION) {
+        const insecure = requestProblems(requestUrls);
+        if (insecure.length) out.push(`insecure or legacy requests: ${JSON.stringify(insecure)}`);
+      }
       return out;
     },
   };
@@ -292,6 +313,45 @@ function protectedRedirectCheck(route) {
   };
 }
 
+/**
+ * Production-only page check: absolute og:url on the production origin, a
+ * fetchable favicon, and not a single request over http: or from *.pages.dev.
+ */
+function productionPageCheck(route) {
+  return async ({ context }) => {
+    const page = await context.newPage();
+    try {
+      const watcher = watchPage(page);
+      await loadPage(page, route);
+
+      const { ogUrl, iconHref } = await page.evaluate(() => ({
+        ogUrl: document.querySelector('meta[property="og:url"]')?.getAttribute('content')?.trim() ?? '',
+        iconHref: document.querySelector('link[rel="icon"]')?.getAttribute('href')?.trim() ?? '',
+      }));
+
+      const ogProblem = ogUrlProblem(ogUrl);
+      assert(ogProblem === null, `${route}: ${ogProblem}`);
+
+      assert(iconHref, `${route}: no <link rel="icon"> in the document`);
+      const iconUrl = new URL(iconHref, page.url()).toString();
+      const icon = await context.request.get(iconUrl);
+      assert(icon.status() === 200, `${route}: icon ${iconUrl} returned HTTP ${icon.status()}`);
+
+      const urls = watcher.requestUrls();
+      const insecure = requestProblems(urls);
+      assert(
+        insecure.length === 0,
+        `${route}: ${insecure.length} of ${urls.length} requests insecure/legacy: ${JSON.stringify(insecure)}`
+      );
+      const offOrigin = urls.filter((u) => !u.startsWith(PRODUCTION_ORIGIN + '/') && !u.startsWith('data:'));
+      console.log(`    ${route}: og:url=${ogUrl} icon=${icon.status()} requests=${urls.length} (off-origin: ${offOrigin.length})`);
+      return [];
+    } finally {
+      await page.close();
+    }
+  };
+}
+
 function mobileCheck(route) {
   return async ({ mobileContext }) => {
     const page = await mobileContext.newPage();
@@ -336,12 +396,17 @@ function buildChecks() {
   for (const route of PUBLIC_PAGES) {
     checks.push({ name: `Page load (mobile 390×844): ${route}`, run: mobileCheck(route) });
   }
+  if (PRODUCTION) {
+    for (const route of PUBLIC_PAGES) {
+      checks.push({ name: `Production: og:url, icon and https-only requests on ${route}`, run: productionPageCheck(route) });
+    }
+  }
   return checks;
 }
 
 async function main() {
   await mkdir(SCREENSHOT_DIR, { recursive: true });
-  console.log(`Smoke test against ${BASE_URL}`);
+  console.log(`Smoke test against ${BASE_URL}${PRODUCTION ? ' (--production)' : ''}`);
 
   const browser = await chromium.launch();
   const contextOptions = { colorScheme: 'light', ignoreHTTPSErrors: false };
@@ -382,6 +447,7 @@ async function main() {
     screenshots: results.flatMap((r) => r.screenshots),
     error: failed.length === 0 ? null : failed.map((r) => `${r.test_name}: ${r.error}`).join('\n'),
     base_url: BASE_URL,
+    production: PRODUCTION,
     started_at: RUN_STAMP,
     summary: { total: results.length, passed: results.length - failed.length, failed: failed.length },
     checks: results,

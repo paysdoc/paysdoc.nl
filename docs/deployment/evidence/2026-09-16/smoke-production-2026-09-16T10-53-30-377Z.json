@@ -1,0 +1,288 @@
+{
+  "test_name": "paysdoc.nl smoke test (https://www.paysdoc.nl)",
+  "status": "passed",
+  "screenshots": [
+    ".maestro/playbooks/Working/screenshots/desktop-home.png",
+    ".maestro/playbooks/Working/screenshots/desktop-about.png",
+    ".maestro/playbooks/Working/screenshots/desktop-services.png",
+    ".maestro/playbooks/Working/screenshots/desktop-how-it-works.png",
+    ".maestro/playbooks/Working/screenshots/desktop-contact.png",
+    ".maestro/playbooks/Working/screenshots/desktop-login.png",
+    ".maestro/playbooks/Working/screenshots/desktop-auth-verify-request.png",
+    ".maestro/playbooks/Working/screenshots/branding-navbar.png",
+    ".maestro/playbooks/Working/screenshots/branding-hero.png",
+    ".maestro/playbooks/Working/screenshots/interest-form-initial.png",
+    ".maestro/playbooks/Working/screenshots/interest-form-success.png",
+    ".maestro/playbooks/Working/screenshots/auth-login-page.png",
+    ".maestro/playbooks/Working/screenshots/auth-redirect-dashboard.png",
+    ".maestro/playbooks/Working/screenshots/auth-redirect-admin.png",
+    ".maestro/playbooks/Working/screenshots/mobile-home.png",
+    ".maestro/playbooks/Working/screenshots/mobile-about.png",
+    ".maestro/playbooks/Working/screenshots/mobile-services.png",
+    ".maestro/playbooks/Working/screenshots/mobile-how-it-works.png",
+    ".maestro/playbooks/Working/screenshots/mobile-contact.png",
+    ".maestro/playbooks/Working/screenshots/mobile-login.png",
+    ".maestro/playbooks/Working/screenshots/mobile-auth-verify-request.png"
+  ],
+  "error": null,
+  "base_url": "https://www.paysdoc.nl",
+  "production": true,
+  "started_at": "2026-09-16T10-53-30-377Z",
+  "summary": {
+    "total": 35,
+    "passed": 35,
+    "failed": 0
+  },
+  "checks": [
+    {
+      "test_name": "Page load (desktop): /",
+      "status": "passed",
+      "screenshots": [
+        ".maestro/playbooks/Working/screenshots/desktop-home.png"
+      ],
+      "error": null
+    },
+    {
+      "test_name": "Page load (desktop): /about",
+      "status": "passed",
+      "screenshots": [
+        ".maestro/playbooks/Working/screenshots/desktop-about.png"
+      ],
+      "error": null
+    },
+    {
+      "test_name": "Page load (desktop): /services",
+      "status": "passed",
+      "screenshots": [
+        ".maestro/playbooks/Working/screenshots/desktop-services.png"
+      ],
+      "error": null
+    },
+    {
+      "test_name": "Page load (desktop): /how-it-works",
+      "status": "passed",
+      "screenshots": [
+        ".maestro/playbooks/Working/screenshots/desktop-how-it-works.png"
+      ],
+      "error": null
+    },
+    {
+      "test_name": "Page load (desktop): /contact",
+      "status": "passed",
+      "screenshots": [
+        ".maestro/playbooks/Working/screenshots/desktop-contact.png"
+      ],
+      "error": null
+    },
+    {
+      "test_name": "Page load (desktop): /login",
+      "status": "passed",
+      "screenshots": [
+        ".maestro/playbooks/Working/screenshots/desktop-login.png"
+      ],
+      "error": null
+    },
+    {
+      "test_name": "Page load (desktop): /auth/verify-request",
+      "status": "passed",
+      "screenshots": [
+        ".maestro/playbooks/Working/screenshots/desktop-auth-verify-request.png"
+      ],
+      "error": null
+    },
+    {
+      "test_name": "Metadata: /",
+      "status": "passed",
+      "screenshots": [],
+      "error": null
+    },
+    {
+      "test_name": "Metadata: /about",
+      "status": "passed",
+      "screenshots": [],
+      "error": null
+    },
+    {
+      "test_name": "Metadata: /services",
+      "status": "passed",
+      "screenshots": [],
+      "error": null
+    },
+    {
+      "test_name": "Metadata: /how-it-works",
+      "status": "passed",
+      "screenshots": [],
+      "error": null
+    },
+    {
+      "test_name": "Metadata: /contact",
+      "status": "passed",
+      "screenshots": [],
+      "error": null
+    },
+    {
+      "test_name": "Metadata: /login",
+      "status": "passed",
+      "screenshots": [],
+      "error": null
+    },
+    {
+      "test_name": "Metadata: /auth/verify-request",
+      "status": "passed",
+      "screenshots": [],
+      "error": null
+    },
+    {
+      "test_name": "Branding: font, colours, logo, headshot, assets",
+      "status": "passed",
+      "screenshots": [
+        ".maestro/playbooks/Working/screenshots/branding-navbar.png",
+        ".maestro/playbooks/Working/screenshots/branding-hero.png"
+      ],
+      "error": null
+    },
+    {
+      "test_name": "Interest form: /contact submission",
+      "status": "passed",
+      "screenshots": [
+        ".maestro/playbooks/Working/screenshots/interest-form-initial.png",
+        ".maestro/playbooks/Working/screenshots/interest-form-success.png"
+      ],
+      "error": null
+    },
+    {
+      "test_name": "Interest API: POST /api/interest validation",
+      "status": "passed",
+      "screenshots": [],
+      "error": null
+    },
+    {
+      "test_name": "Auth: providers endpoint",
+      "status": "passed",
+      "screenshots": [],
+      "error": null
+    },
+    {
+      "test_name": "Auth: login link and OAuth buttons",
+      "status": "passed",
+      "screenshots": [
+        ".maestro/playbooks/Working/screenshots/auth-login-page.png"
+      ],
+      "error": null
+    },
+    {
+      "test_name": "Auth: unauthenticated /dashboard redirects to /login",
+      "status": "passed",
+      "screenshots": [
+        ".maestro/playbooks/Working/screenshots/auth-redirect-dashboard.png"
+      ],
+      "error": null
+    },
+    {
+      "test_name": "Auth: unauthenticated /admin redirects to /login",
+      "status": "passed",
+      "screenshots": [
+        ".maestro/playbooks/Working/screenshots/auth-redirect-admin.png"
+      ],
+      "error": null
+    },
+    {
+      "test_name": "Page load (mobile 390×844): /",
+      "status": "passed",
+      "screenshots": [
+        ".maestro/playbooks/Working/screenshots/mobile-home.png"
+      ],
+      "error": null
+    },
+    {
+      "test_name": "Page load (mobile 390×844): /about",
+      "status": "passed",
+      "screenshots": [
+        ".maestro/playbooks/Working/screenshots/mobile-about.png"
+      ],
+      "error": null
+    },
+    {
+      "test_name": "Page load (mobile 390×844): /services",
+      "status": "passed",
+      "screenshots": [
+        ".maestro/playbooks/Working/screenshots/mobile-services.png"
+      ],
+      "error": null
+    },
+    {
+      "test_name": "Page load (mobile 390×844): /how-it-works",
+      "status": "passed",
+      "screenshots": [
+        ".maestro/playbooks/Working/screenshots/mobile-how-it-works.png"
+      ],
+      "error": null
+    },
+    {
+      "test_name": "Page load (mobile 390×844): /contact",
+      "status": "passed",
+      "screenshots": [
+        ".maestro/playbooks/Working/screenshots/mobile-contact.png"
+      ],
+      "error": null
+    },
+    {
+      "test_name": "Page load (mobile 390×844): /login",
+      "status": "passed",
+      "screenshots": [
+        ".maestro/playbooks/Working/screenshots/mobile-login.png"
+      ],
+      "error": null
+    },
+    {
+      "test_name": "Page load (mobile 390×844): /auth/verify-request",
+      "status": "passed",
+      "screenshots": [
+        ".maestro/playbooks/Working/screenshots/mobile-auth-verify-request.png"
+      ],
+      "error": null
+    },
+    {
+      "test_name": "Production: og:url, icon and https-only requests on /",
+      "status": "passed",
+      "screenshots": [],
+      "error": null
+    },
+    {
+      "test_name": "Production: og:url, icon and https-only requests on /about",
+      "status": "passed",
+      "screenshots": [],
+      "error": null
+    },
+    {
+      "test_name": "Production: og:url, icon and https-only requests on /services",
+      "status": "passed",
+      "screenshots": [],
+      "error": null
+    },
+    {
+      "test_name": "Production: og:url, icon and https-only requests on /how-it-works",
+      "status": "passed",
+      "screenshots": [],
+      "error": null
+    },
+    {
+      "test_name": "Production: og:url, icon and https-only requests on /contact",
+      "status": "passed",
+      "screenshots": [],
+      "error": null
+    },
+    {
+      "test_name": "Production: og:url, icon and https-only requests on /login",
+      "status": "passed",
+      "screenshots": [],
+      "error": null
+    },
+    {
+      "test_name": "Production: og:url, icon and https-only requests on /auth/verify-request",
+      "status": "passed",
+      "screenshots": [],
+      "error": null
+    }
+  ]
+}
