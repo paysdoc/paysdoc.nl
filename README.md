@@ -10,13 +10,7 @@ Install dependencies:
 npm install
 ```
 
-Copy the sample environment file and fill in your values:
-
-```bash
-cp .env.sample .env
-```
-
-See `.env.sample` for all required variables. For local development with Cloudflare Workers (`wrangler dev`), copy the same values into `.dev.vars` — Cloudflare ignores `.env`.
+Create a `.dev.vars` file at the project root (git-ignored; there is no sample file in the repo) with the variables listed under **Authentication** and **Magic Link Email Setup** below. `.dev.vars` is the local equivalent of the Worker secrets that CI pushes to Cloudflare: both `npm run dev` (through the OpenNext dev bindings) and `npm run preview` read it. Never commit or print it.
 
 Run the development server:
 
@@ -64,35 +58,52 @@ src/
     repo-url.ts         # GitHub/GitLab URL parsing
     roles.ts            # Role resolution helpers
     __tests__/          # Unit tests (Vitest)
+      interest-route.test.ts  # POST /api/interest with a mocked Cloudflare context
+      migrations.test.ts  # Applies migrations/ to an in-memory SQLite DB
+      roles.test.ts       # Role resolution
   types/                # TypeScript type augmentations
     cost.ts             # Cost domain types (D1 row + view types)
     next-auth.d.ts      # Extended Auth.js session/JWT types
   auth.ts               # Auth.js v5 configuration
   middleware.ts         # Route protection middleware
 workers/
-  email-worker/         # Cloudflare Worker — sends magic link emails via Resend
-migrations/             # Cloudflare D1 SQL migrations
+  email-worker/         # Cloudflare Worker `email` — sends magic link emails via Resend
+    src/index.ts
+    wrangler.jsonc
+migrations/             # Cloudflare D1 SQL migrations (auth tables, client repos, cost tables)
 scripts/
   smoke.mjs             # Playwright smoke test (npm run smoke; -- --production adds the real-domain checks)
   check-links.mjs       # Playwright broken-link crawl of the public pages (npm run check-links)
   lib/production-rules.mjs  # Pure og:url / https-only / no-pages.dev rules used by --production (unit-tested)
-  dev/                  # Local-only D1 fixtures for the preview (never applied to production)
+  lib/link-rules.mjs    # Pure link classification rules used by check-links (unit-tested)
+docs/
+  deployment/           # Deployment documentation cluster (start at index.md)
+    index.md
+    deployment-runbook.md
+    2026-workers-migration.md
+    production-smoke-test.md
+    manual-verification-checklist.md
+    evidence/<date>/    # Smoke/link reports and screenshots from production runs
 .github/workflows/
   deploy.yml            # Build + deploy to Cloudflare Workers on push to main
   cloudflare-ops.yml    # Manual wrangler operations against the live account
 features/               # Cucumber BDD feature files
-e2e-tests/              # E2E test plans
-specs/                  # ADW-generated implementation specs
+  step_definitions/     # Step definitions (TypeScript, via ts-node)
+  regression/           # Regression vocabulary for scenario writing
+e2e-tests/              # E2E test plans (Markdown, one per feature)
+specs/                  # ADW-generated implementation specs, patches and the PRD
 app_docs/               # Feature documentation
 public/
   fonts/                # Self-hosted brand fonts (Euphemia UCAS)
   images/               # Brand imagery (logo, headshot)
   # Static SVGs and favicon
 cloudflare-env.d.ts     # Cloudflare environment type bindings
-wrangler.jsonc          # Cloudflare Workers deployment config (Worker + static assets)
+wrangler.jsonc          # Cloudflare Workers deployment config (Worker + static assets, D1, KV)
 open-next.config.ts     # OpenNext Cloudflare adapter config
 vitest.config.ts        # Vitest unit test configuration
 cucumber.js             # Cucumber BDD configuration
+tsconfig.cucumber.json  # TypeScript config used by the Cucumber runner
+UBIQUITOUS_LANGUAGE.md  # Domain glossary
 .adw/                   # ADW pipeline configuration (project, scenarios, providers)
 ```
 
@@ -114,7 +125,7 @@ Authentication is handled by [Auth.js v5](https://authjs.dev/) with Google and G
 | `AUTH_GITHUB_ID` | GitHub OAuth app client ID |
 | `AUTH_GITHUB_SECRET` | GitHub OAuth app client secret |
 
-For local development, create a `.env.local` file at the project root (git-ignored):
+For local development, put these in `.dev.vars` at the project root (git-ignored):
 
 ```
 AUTH_SECRET=your-secret-here
@@ -124,7 +135,7 @@ AUTH_GITHUB_ID=your-github-client-id
 AUTH_GITHUB_SECRET=your-github-client-secret
 ```
 
-Alternatively, use a `.dev.vars` file (Cloudflare convention) with the same variables — both are read during local development.
+`next dev` also reads a plain `.env.local` with the same variables, but `.dev.vars` is the one the Workers preview (`npm run preview`) uses, so keep it as the single source.
 
 ### D1 database setup
 
@@ -150,7 +161,7 @@ Alternatively, use a `.dev.vars` file (Cloudflare convention) with the same vari
 
 ## Deployment
 
-The site is deployed to [Cloudflare Workers](https://developers.cloudflare.com/workers/) with static assets via GitHub Actions (`.github/workflows/deploy.yml`). The [`@opennextjs/cloudflare`](https://opennext.js.org/cloudflare) adapter builds the Next.js app into a Worker (`.open-next/worker.js`) plus an assets directory (`.open-next/assets`); `wrangler.jsonc` points `main` at the Worker and binds the assets as `ASSETS`, so `wrangler deploy` ships both. On every push to `main` (or a manual `workflow_dispatch`), the workflow:
+The site is deployed to [Cloudflare Workers](https://developers.cloudflare.com/workers/) with static assets via GitHub Actions (`.github/workflows/deploy.yml`). The full operating guide — architecture, secrets model, everyday operations, first-deploy steps and a troubleshooting table — is the [Deployment Runbook](./docs/deployment/deployment-runbook.md); [`docs/deployment/index.md`](./docs/deployment/index.md) lists every deployment document, including the [Manual verification checklist](./docs/deployment/manual-verification-checklist.md) (the human steps after a deploy: OAuth logins, magic link, dashboard and admin) and the [Production smoke test report](./docs/deployment/production-smoke-test.md). The [`@opennextjs/cloudflare`](https://opennext.js.org/cloudflare) adapter builds the Next.js app into a Worker (`.open-next/worker.js`) plus an assets directory (`.open-next/assets`); `wrangler.jsonc` points `main` at the Worker and binds the assets as `ASSETS`, so `wrangler deploy` ships both. On every push to `main` (or a manual `workflow_dispatch`), the workflow:
 
 1. Installs dependencies with `npm ci` (Node 22)
 2. Runs `npm run lint` and `npm test`
@@ -162,7 +173,7 @@ The site is deployed to [Cloudflare Workers](https://developers.cloudflare.com/w
 8. Pushes the email Worker secrets with `wrangler secret bulk`
 9. Prints the deployed `workers.dev` URL in the log and the job summary
 
-The following GitHub Actions secrets must be configured in the repository. The workflow pushes the application secrets to the Workers on every deploy (values are only ever passed via `env` and piped on stdin, never echoed), so Cloudflare Secrets Store is no longer used and secrets never need to be set in the Cloudflare dashboard.
+The following GitHub Actions secrets must be configured in the repository. The workflow pushes the application secrets to the Workers on every deploy as plain Worker secrets (values are only ever passed via `env` and piped on stdin, never echoed), so secrets never need to be set in the Cloudflare dashboard. To rotate one, run `gh secret set <NAME>` and re-run the deploy workflow (`gh workflow run deploy.yml`).
 
 | Secret | Used by | Description |
 |--------|---------|-------------|
