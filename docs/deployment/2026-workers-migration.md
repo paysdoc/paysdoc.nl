@@ -143,7 +143,8 @@ Observation, not a failure: `og:url` is `https://www.paysdoc.nl` on every page b
   file for `nosniff` on assets, and the dashboard-only *Always Use HTTPS* + HSTS toggles at the edge. HSTS is sent
   without `includeSubDomains`/`preload` on purpose.
 - **Real-domain verification**: OAuth callbacks, magic-link sign-in, security headers, TTFB and the manual
-  checklist (Phase 03). The first Phase 03 pass (2026-09-16) confirmed `https://www.paysdoc.nl/` 200, apex 308 → www,
+  checklist (Phase 03; the human part is now [[Manual-Verification-Checklist]],
+  `manual-verification-checklist.md`). The first Phase 03 pass (2026-09-16) confirmed `https://www.paysdoc.nl/` 200, apex 308 → www,
   `/api/auth/providers` JSON from the Worker, and that the served Turbopack chunk hashes match a local build of
   `main` (the `BUILD_ID` is random per build, so compare chunk names, not ids; `/BUILD_ID` is a public asset).
   It also found `http://www.paysdoc.nl/` answering 200 over plain http because the zone's *Always Use HTTPS*
