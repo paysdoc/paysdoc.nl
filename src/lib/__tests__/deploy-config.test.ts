@@ -23,10 +23,28 @@ describe('custom domain deploy config', () => {
   it('permanently redirects the apex root and every apex path to www, preserving the path', async () => {
     const redirects = await nextConfig.redirects!();
     const apexHost = { type: 'host', value: '^paysdoc\\.nl$' };
+    const plainHttp = { type: 'header', key: 'x-forwarded-proto', value: '^http$' };
     expect(redirects).toEqual([
       { source: '/', has: [apexHost], destination: 'https://www.paysdoc.nl/', permanent: true },
       { source: '/:path+', has: [apexHost], destination: 'https://www.paysdoc.nl/:path+', permanent: true },
+      { source: '/', has: [plainHttp], destination: 'https://www.paysdoc.nl/', permanent: true },
+      { source: '/:path+', has: [plainHttp], destination: 'https://www.paysdoc.nl/:path+', permanent: true },
     ]);
+  });
+
+  it('upgrades plain-http requests to https without matching https itself under OpenNext', async () => {
+    const redirects = await nextConfig.redirects!();
+    const httpRules = redirects.filter((r) => r.has?.some((h) => h.type === 'header'));
+    expect(httpRules).toHaveLength(2);
+    for (const rule of httpRules) {
+      const [{ key, value }] = rule.has!;
+      expect(key).toBe('x-forwarded-proto');
+      expect(rule.destination.startsWith('https://www.paysdoc.nl/')).toBe(true);
+      for (const re of [new RegExp(value!), new RegExp(`^${value}$`)]) {
+        expect(re.test('http')).toBe(true);
+        expect(re.test('https')).toBe(false);
+      }
+    }
   });
 
   it('anchors the apex host match so www does not redirect to itself under OpenNext', async () => {
